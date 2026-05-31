@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-// 已知语言下的任意未匹配子路径（以及未知语言前缀）都落到本地化 404
+// Any unmatched subpath under a known locale (and any unknown locale prefix) falls through to the localized 404
 export default function CatchAllPage() {
   notFound();
 }

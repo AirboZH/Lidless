@@ -1,6 +1,7 @@
-//! 电源状态检测：用于「仅在插电时生效」选项。
+//! Power-source detection: used by the "only when plugged in" option.
 //!
-//! 返回 `Some(true)` 表示已接通电源，`Some(false)` 表示电池供电，`None` 表示未知。
+//! Returns `Some(true)` when on AC power, `Some(false)` when on battery, and
+//! `None` when unknown.
 
 pub fn on_ac_power() -> Option<bool> {
     #[cfg(target_os = "windows")]
@@ -20,7 +21,7 @@ pub fn on_ac_power() -> Option<bool> {
 #[cfg(target_os = "windows")]
 fn windows_on_ac() -> Option<bool> {
     #[repr(C)]
-    #[allow(dead_code)] // 字段由 FFI 写入，Rust 侧只读 ac_line_status
+    #[allow(dead_code)] // fields written by FFI; the Rust side only reads ac_line_status
     struct SystemPowerStatus {
         ac_line_status: u8,
         battery_flag: u8,
@@ -48,15 +49,15 @@ fn windows_on_ac() -> Option<bool> {
         return None;
     }
     match s.ac_line_status {
-        0 => Some(false), // Offline，电池
-        1 => Some(true),  // Online，已插电
+        0 => Some(false), // Offline, on battery
+        1 => Some(true),  // Online, plugged in
         _ => None,        // 255 Unknown
     }
 }
 
 #[cfg(target_os = "macos")]
 fn macos_on_ac() -> Option<bool> {
-    // 解析 `pmset -g batt`，输出含 "AC Power" 或 "Battery Power"
+    // Parse `pmset -g batt`; the output contains "AC Power" or "Battery Power"
     let out = std::process::Command::new("pmset")
         .args(["-g", "batt"])
         .output()

@@ -21,7 +21,7 @@ export function LanguageSwitcher() {
   function onChange(next: string) {
     if (next === locale) return;
     startTransition(() => {
-      // pathname 已去掉语言前缀，按目标语言重写
+      // pathname already has the locale prefix stripped; rewrite it for the target locale
       router.replace(pathname, { locale: next as Locale });
     });
   }

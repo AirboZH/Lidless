@@ -1,11 +1,13 @@
-//! 跨平台「保持唤醒」原语。
+//! Cross-platform "keep awake" primitive.
 //!
-//! 统一接口：`Awake::new()` 创建（未生效），`engage()` 让系统不睡眠，
-//! `disengage()` 解除。各平台实现见同目录文件。
+//! Unified interface: `Awake::new()` creates it (inactive), `engage()` keeps
+//! the system from sleeping, `disengage()` releases it. Per-platform
+//! implementations live in the sibling files.
 //!
-//! ⚠️ Windows 重要约束：`SetThreadExecutionState` 设置的状态是**线程私有**的，
-//! 线程退出即失效。因此 `engage()/disengage()` 必须始终在同一个长生命周期线程
-//! （manager 里的 monitor 线程）上调用——调用方已保证这一点。
+//! ⚠️ Important Windows constraint: the state set by `SetThreadExecutionState`
+//! is **thread-local** and is cleared when the thread exits. Therefore
+//! `engage()/disengage()` must always be called on the same long-lived thread
+//! (the monitor thread in `manager`) — callers already guarantee this.
 
 #[cfg(target_os = "windows")]
 mod windows;

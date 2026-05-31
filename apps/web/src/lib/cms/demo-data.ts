@@ -2,8 +2,9 @@ import type { Locale } from "@/i18n/routing";
 import type { UseCase } from "./types";
 
 /**
- * 用例的兜底数据。Sanity 未配置（或查询失败）时使用。
- * 接入 CMS 后，这些就是「内容长什么样」的参考样例。
+ * Fallback data for the use cases. Used when Sanity is not configured (or a
+ * query fails). Once a CMS is connected, these also serve as a reference for
+ * what the content should look like.
  */
 export const demoUseCases: Record<Locale, UseCase[]> = {
   en: [

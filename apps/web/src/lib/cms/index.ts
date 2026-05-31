@@ -8,9 +8,10 @@ export type { UseCase, UseCaseIconKey } from "./types";
 export { isSanityConfigured } from "./client";
 
 /**
- * 取落地页用例。
- * - 未配置 Sanity → 直接返回 demo 数据
- * - 配置了 Sanity → 查询；查询为空或报错时仍回退到 demo 数据，保证页面永远有内容
+ * Fetches the use cases for the landing page.
+ * - Sanity not configured → return demo data directly
+ * - Sanity configured → run the query; if it returns empty or errors, still
+ *   fall back to demo data so the page always has content
  */
 export async function getUseCases(locale: Locale): Promise<UseCase[]> {
   const fallback = demoUseCases[locale] ?? demoUseCases.en;
@@ -23,13 +24,13 @@ export async function getUseCases(locale: Locale): Promise<UseCase[]> {
     const data = await sanityClient.fetch<UseCase[]>(
       useCasesQuery,
       { locale },
-      // 增量静态再生：每小时回源一次，编辑发布后最多 1 小时见效
+      // Incremental Static Regeneration: revalidate hourly, so edits go live within 1 hour at most
       { next: { revalidate: 3600 } },
     );
     return data && data.length > 0 ? data : fallback;
   } catch (error) {
     console.warn(
-      "[cms] Sanity 查询失败，回退到 demo 用例数据：",
+      "[cms] Sanity query failed, falling back to demo use-case data:",
       error,
     );
     return fallback;

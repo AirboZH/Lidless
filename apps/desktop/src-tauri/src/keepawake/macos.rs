@@ -1,9 +1,11 @@
-//! macOS 实现：通过 IOKit 电源管理框架创建 power assertion，
-//! 这正是 `caffeinate` 命令的底层做法。
+//! macOS implementation: create a power assertion via the IOKit power
+//! management framework — exactly what the `caffeinate` command does under
+//! the hood.
 //!
-//! 用 `PreventUserIdleSystemSleep`：阻止系统空闲睡眠，但**允许显示器睡眠**
-//! （锁屏后屏幕可熄灭）。系统不睡眠，Wi-Fi 自然不会断。
-//! 退出时 `IOPMAssertionRelease` 释放。
+//! Uses `PreventUserIdleSystemSleep`: blocks idle system sleep but **allows
+//! the display to sleep** (the screen can turn off after locking). The system
+//! stays awake, so Wi-Fi naturally won't drop. Released with
+//! `IOPMAssertionRelease` on exit.
 
 use std::ffi::{c_void, CString};
 use std::os::raw::c_char;
@@ -17,9 +19,9 @@ const KCFSTRING_ENCODING_UTF8: u32 = 0x0800_0100;
 const KIOPM_ASSERTION_LEVEL_ON: u32 = 255;
 const KIORETURN_SUCCESS: IOReturn = 0;
 
-// 阻止系统睡眠，但放任显示器睡眠（屏幕可熄灭 / 锁屏）
+// Prevent system sleep but let the display sleep (the screen can turn off / lock)
 const ASSERTION_TYPE: &str = "PreventUserIdleSystemSleep";
-const ASSERTION_NAME: &str = "Lidless 正在保持系统唤醒";
+const ASSERTION_NAME: &str = "Lidless is keeping the system awake";
 
 #[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C" {
@@ -43,7 +45,7 @@ unsafe extern "C" {
 }
 
 fn cfstr(s: &str) -> CFStringRef {
-    let c = CString::new(s).expect("assertion 字符串不应包含 NUL");
+    let c = CString::new(s).expect("assertion string must not contain NUL");
     unsafe { CFStringCreateWithCString(std::ptr::null(), c.as_ptr(), KCFSTRING_ENCODING_UTF8) }
 }
 
@@ -74,7 +76,7 @@ impl Awake {
             self.assertion = Some(id);
             Ok(())
         } else {
-            Err(format!("IOPMAssertionCreateWithName 失败: {rc}"))
+            Err(format!("IOPMAssertionCreateWithName failed: {rc}"))
         }
     }
 
@@ -82,7 +84,7 @@ impl Awake {
         if let Some(id) = self.assertion.take() {
             let rc = unsafe { IOPMAssertionRelease(id) };
             if rc != KIORETURN_SUCCESS {
-                return Err(format!("IOPMAssertionRelease 失败: {rc}"));
+                return Err(format!("IOPMAssertionRelease failed: {rc}"));
             }
         }
         Ok(())

@@ -1,4 +1,4 @@
-// 通过 withGlobalTauri 暴露的全局对象访问 Tauri API（无需打包器）
+// Access the Tauri API through the global object exposed by withGlobalTauri (no bundler needed)
 const { invoke } = window.__TAURI__.core;
 const { listen } = window.__TAURI__.event;
 
@@ -19,14 +19,14 @@ function render(s) {
   els.card.classList.toggle("active", s.engaged);
 
   let txt;
-  if (s.engaged) txt = "已保活 · 系统不会睡眠";
-  else if (s.desired && s.ac_only && s.on_ac === false) txt = "已暂停（当前使用电池）";
-  else if (s.desired) txt = "正在启用…";
-  else txt = "未启用";
+  if (s.engaged) txt = "Active · system won't sleep";
+  else if (s.desired && s.ac_only && s.on_ac === false) txt = "Paused (on battery)";
+  else if (s.desired) txt = "Turning on…";
+  else txt = "Off";
   els.stateText.textContent = txt;
 
-  if (s.on_ac === true) els.powerText.textContent = "🔌 已接通电源";
-  else if (s.on_ac === false) els.powerText.textContent = "🔋 使用电池";
+  if (s.on_ac === true) els.powerText.textContent = "🔌 Plugged in";
+  else if (s.on_ac === false) els.powerText.textContent = "🔋 On battery";
   else els.powerText.textContent = "";
 
   const names = { windows: "Windows", macos: "macOS" };
@@ -42,7 +42,7 @@ els.acOnly.addEventListener("change", async () => {
   render(await invoke("set_ac_only", { acOnly: els.acOnly.checked }));
 });
 
-// 后台 monitor 状态变化时实时刷新
+// Refresh live whenever the background monitor's status changes
 listen("status-changed", (e) => render(e.payload));
 
 (async () => {

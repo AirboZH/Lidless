@@ -2,7 +2,7 @@
   "name": "@lidless/web",
   "version": "0.1.0",
   "private": true,
-  "description": "Lidless 官网 · Next.js + next-intl",
+  "description": "Lidless marketing site · Next.js + next-intl",
   "type": "module",
   "scripts": {
     "dev": "next dev",

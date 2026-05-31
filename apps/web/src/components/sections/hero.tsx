@@ -8,7 +8,7 @@ export async function Hero() {
 
   return (
     <section className="relative overflow-hidden px-5 pt-32 pb-20 sm:pt-36 lg:pb-28">
-      {/* 顶部冷光晕 */}
+      {/* Top cool-toned glow */}
       <div
         aria-hidden
         className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[820px] -translate-x-1/2 rounded-full bg-accent/15 blur-[120px]"
@@ -62,7 +62,7 @@ export async function Hero() {
           </p>
         </div>
 
-        {/* app 面板视觉 */}
+        {/* App panel visual */}
         <div className="flex justify-center lg:justify-end">
           <div className="relative">
             <div

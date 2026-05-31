@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* ── 品牌 token（取自桌面 app 的深色夜空配色）──────────────── */
+/* ── Brand tokens (taken from the desktop app's dark night-sky palette) ──────────────── */
 @theme {
   --color-bg: #0b1022;
   --color-bg-soft: #161d3d;
@@ -13,7 +13,7 @@
     "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
 }
 
-/* 半透明描边 / 卡片表面（rgba，不参与色板生成，单独声明便于复用）*/
+/* Semi-transparent hairlines / card surfaces (rgba; kept out of palette generation and declared separately for reuse) */
 :root {
   --hairline: rgba(255, 255, 255, 0.09);
   --surface: rgba(255, 255, 255, 0.04);
@@ -26,13 +26,13 @@
 
 html {
   scroll-behavior: smooth;
-  /* 锚点跳转时给固定导航留出空间 */
+  /* Leave room for the fixed nav when jumping to anchors */
   scroll-padding-top: 5.5rem;
 }
 
 body {
   background-color: var(--color-bg);
-  /* 顶部一抹冷光，向下沉入夜色 */
+  /* A touch of cool light at the top, fading down into the night */
   background-image: radial-gradient(
     120% 90% at 50% -10%,
     var(--color-bg-soft) 0%,
@@ -50,7 +50,7 @@ body {
   color: #fff;
 }
 
-/* 可复用的描边 / 表面工具类 */
+/* Reusable hairline / surface utilities */
 @utility border-hairline {
   border-color: var(--hairline);
 }
@@ -58,13 +58,13 @@ body {
   background-color: var(--surface);
 }
 
-/* 强调色光晕，按钮与发光元素复用 */
+/* Accent-color glow, reused by buttons and glowing elements */
 @utility shadow-glow {
   box-shadow: 0 0 0 1px rgba(108, 140, 255, 0.35),
     0 12px 40px -8px var(--accent-glow);
 }
 
-/* 尊重「减少动态效果」偏好 */
+/* Respect the "reduce motion" preference */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

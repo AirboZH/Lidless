@@ -1,8 +1,9 @@
 import { getTranslations } from "next-intl/server";
 
 /**
- * 桌面 app 主面板的视觉复刻（展示用，非交互），呈现「已保活」发光态。
- * 形态与 apps/desktop/src 的真实面板一致：月亮品牌 + 主开关 + 插电选项 + 页脚。
+ * Visual replica of the desktop app's main panel (display only, non-interactive),
+ * shown in its glowing "keep-awake active" state.
+ * Mirrors the real panel in apps/desktop/src: moon brand + main toggle + AC-power option + footer.
  */
 export async function AppWindow() {
   const t = await getTranslations("AppPanel");
@@ -12,7 +13,7 @@ export async function AppWindow() {
       aria-hidden
       className="w-[300px] shrink-0 select-none rounded-2xl border border-white/10 bg-[radial-gradient(120%_120%_at_50%_0%,var(--color-bg-soft)_0%,var(--color-bg)_62%)] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.55),inset_0_0_0_1px_rgba(108,140,255,0.3),0_0_42px_rgba(108,140,255,0.18)]"
     >
-      {/* 品牌区 */}
+      {/* Brand area */}
       <div className="flex items-center gap-3.5">
         <div className="relative h-11 w-11 shrink-0 rounded-full bg-[#e9eeff] shadow-[inset_-3px_0_0_-1px_rgba(108,140,255,0.25)] drop-shadow-[0_0_10px_var(--accent-glow)]" />
         <div>
@@ -21,7 +22,7 @@ export async function AppWindow() {
         </div>
       </div>
 
-      {/* 主开关 */}
+      {/* Main toggle */}
       <div className="mt-5 flex items-center justify-between rounded-2xl border border-hairline bg-surface p-5">
         <div>
           <div className="text-[15px] font-semibold">{t("toggleLabel")}</div>
@@ -32,7 +33,7 @@ export async function AppWindow() {
         </div>
       </div>
 
-      {/* 插电选项 */}
+      {/* AC-power option */}
       <div className="mt-4 flex items-center gap-2.5 px-1">
         <span className="grid h-[17px] w-[17px] shrink-0 place-items-center rounded-[4px] bg-accent text-[10px] text-white">
           ✓
@@ -43,7 +44,7 @@ export async function AppWindow() {
         </span>
       </div>
 
-      {/* 页脚 */}
+      {/* Footer */}
       <div className="mt-5 flex items-center justify-between text-[11px] text-muted">
         <span>{t("platform")}</span>
         <span>{t("footnote")}</span>

@@ -2,7 +2,7 @@
   "name": "lidless-monorepo",
   "version": "0.1.0",
   "private": true,
-  "description": "Lidless monorepo：桌面端锁屏保活 app (apps/desktop) 与官网 (apps/web)",
+  "description": "Lidless monorepo: the desktop keep-awake app (apps/desktop) and the marketing site (apps/web)",
   "packageManager": "pnpm@10.24.0",
   "engines": {
     "node": ">=20"

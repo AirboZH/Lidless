@@ -1,45 +1,50 @@
-# Lidless
+# Lidless — desktop app
 
-> 锁屏不睡眠 · 网络不掉线
+> Stay awake when locked · stay online
 
-让电脑在**锁屏状态下保持唤醒、Wi-Fi 不断**，方便远程使用 Claude Code、RustDesk 等。
-一个开关，跨 Windows / macOS。名字取自 *lidless eye*——机器看起来睡着了（锁屏），那只不闭的眼睛却始终醒着。
+Keep the machine **awake while locked, with Wi-Fi alive**, so you can use Claude Code,
+RustDesk and the like remotely. One switch, across Windows / macOS. The name comes from
+the *lidless eye* — the machine looks asleep (locked), but the unblinking eye stays open.
 
-## 功能
+## Features
 
-- **一键保活**：阻止系统进入睡眠；锁屏后屏幕可正常熄灭，但系统和后台进程继续运行。
-- **仅插电时生效**（可选）：拔掉电源自动暂停，插上自动恢复。
-- **Modern Standby 提醒**（Windows）：检测到 S0 待机时提示无线网卡省电的处理办法。
-- **托盘弹窗**：无任务栏图标、无常驻窗口；点击托盘图标在托盘旁弹出面板，点击别处（失焦）自动收起，后台继续保活。
+- **One-tap keep awake**: prevent system sleep; after locking, the screen can still turn off normally while the system and background processes keep running.
+- **Only when plugged in** (optional): pause automatically on battery, resume when plugged back in.
+- **Modern Standby hint** (Windows): when S0 standby is detected, surface how to deal with wireless-adapter power saving.
+- **Tray popover**: no taskbar icon and no always-on window; click the tray icon to pop up a panel next to the tray, click elsewhere (blur) to tuck it away while keep-awake continues in the background.
 
-## 技术原理
+## How it works
 
-| 平台 | 阻止睡眠 | 电源检测 |
+| Platform | Prevent sleep | Power detection |
 | --- | --- | --- |
 | Windows | `SetThreadExecutionState(ES_CONTINUOUS \| ES_SYSTEM_REQUIRED \| ES_AWAYMODE_REQUIRED)` | `GetSystemPowerStatus` |
 | macOS | IOKit `IOPMAssertionCreateWithName(PreventUserIdleSystemSleep)` | `pmset -g batt` |
 
-系统调用均为手写 FFI（见 `src-tauri/src/keepawake/`、`src-tauri/src/power.rs`），不依赖第三方 crate。
-关键约束：Windows 的 `SetThreadExecutionState` 状态是**线程私有**的，因此所有 OS 级保活调用都集中在
-`manager.rs` 的单一 monitor 线程上执行；前端命令只改标志位并唤醒该线程。
+All system calls are hand-written FFI (see `src-tauri/src/keepawake/`, `src-tauri/src/power.rs`),
+with no third-party crates. Key constraint: Windows' `SetThreadExecutionState` state is
+**thread-local**, so all OS-level keep-awake calls are made on the single monitor thread in
+`manager.rs`; frontend commands only flip flags and wake that thread.
 
-## 开发 / 运行
+## Develop / run
 
-前置：[Rust](https://rustup.rs/)、[Node.js](https://nodejs.org/)、[pnpm](https://pnpm.io/)。Windows 还需 WebView2（Win11 自带）。
+Prerequisites: [Rust](https://rustup.rs/), [Node.js](https://nodejs.org/), [pnpm](https://pnpm.io/).
+On Windows you also need WebView2 (bundled with Windows 11). Run from the repo root:
 
 ```bash
 pnpm install
-pnpm icon        # 由 app-icon.png 生成各平台图标到 src-tauri/icons/
-pnpm dev         # 开发模式运行
-pnpm build       # 打包安装程序
+pnpm --filter @lidless/desktop icon   # generate per-platform icons from app-icon.png into src-tauri/icons/
+pnpm desktop:dev                       # run in dev mode
+pnpm desktop:build                     # build the installers
 ```
 
-## 后续计划（step 2）
+## Roadmap (step 2)
 
-当前版本靠「让系统不睡眠」顺带保住 Wi-Fi，对绝大多数传统 S3 睡眠的机器足够。
-更彻底地处理无线网卡省电（尤其 Modern Standby 机型）需要：
+The current version keeps Wi-Fi alive as a side effect of "keeping the system awake",
+which is enough for most machines that use traditional S3 sleep. Handling wireless-adapter
+power saving more thoroughly (especially on Modern Standby machines) would need:
 
-- Windows：通过 WMI (`MSPower_DeviceWakeEnable`) 或设备属性关闭网卡的「允许计算机关闭此设备以节约电源」，需要管理员权限。
-- 把保活状态持久化、开机自启、首次引导。
+- Windows: disable the adapter's "Allow the computer to turn off this device to save power"
+  via WMI (`MSPower_DeviceWakeEnable`) or device properties — requires administrator rights.
+- Persisting the keep-awake state, launch-on-login, and a first-run onboarding flow.
 
-详见 `manager.rs` 中 `system_report` 给出的提示。
+See the hint produced by `system_report` in `manager.rs`.

@@ -1,20 +1,21 @@
 /**
- * 站点级配置集中在这里，便于一处修改。
- * 凡是「待你填真实值」的项都走环境变量，并给了占位默认值，构建不会因为缺值而失败。
+ * Site-level config lives here so it can be changed in one place.
+ * Anything that needs a real value comes from an environment variable with a
+ * placeholder default, so the build never fails just because a value is missing.
  */
 
-// 站点规范域名（用于 canonical / hreflang / sitemap / OG）。部署时设 NEXT_PUBLIC_SITE_URL。
+// Canonical site origin (used for canonical / hreflang / sitemap / OG). Set NEXT_PUBLIC_SITE_URL when deploying.
 export const siteUrl = (
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://lidless.cc"
 ).replace(/\/$/, "");
 
-// 主 CTA「Download for macOS」指向的真实下载链接（.dmg / Release 页）。
-// TODO: 部署前把 NEXT_PUBLIC_DOWNLOAD_URL 设成真实链接。
+// The real download link the primary CTA "Download for macOS" points to (.dmg / Release page).
+// TODO: set NEXT_PUBLIC_DOWNLOAD_URL to the real link before deploying.
 export const downloadUrl =
   process.env.NEXT_PUBLIC_DOWNLOAD_URL ??
   "https://github.com/AirboZH/Lidless/releases/latest";
 
-// GitHub 仓库地址（副 CTA / 页脚）。
+// GitHub repository URL (secondary CTA / footer).
 export const githubUrl =
   process.env.NEXT_PUBLIC_GITHUB_URL ?? "https://github.com/AirboZH/Lidless";
 
@@ -23,10 +24,10 @@ export const siteConfig = {
   url: siteUrl,
   downloadUrl,
   githubUrl,
-  // 当前发布的版本与系统要求（展示在下载按钮附近）
+  // Current released version and system requirement (shown near the download button)
   appVersion: "0.1.0",
   minMacOS: "12.0",
-  // 社交 / 联系（OG、JSON-LD 用）
+  // Social / contact (used by OG and JSON-LD)
   twitter: process.env.NEXT_PUBLIC_TWITTER ?? "",
   email: "hi@lidless.cc",
 } as const;

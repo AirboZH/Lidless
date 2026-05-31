@@ -3,7 +3,7 @@ import type { UseCaseIconKey } from "@/lib/cms";
 
 type IconProps = SVGProps<SVGSVGElement>;
 
-/** 线性图标统一的基础属性 */
+/** Shared base attributes for the line icons */
 function base(props: IconProps): IconProps {
   return {
     viewBox: "0 0 24 24",
@@ -17,9 +17,9 @@ function base(props: IconProps): IconProps {
   };
 }
 
-/* ── 品牌 ──────────────────────────────────────────── */
+/* ── Brand ─────────────────────────────────────────── */
 
-/** 月亮 logo —— 桌面 app 同款「不闭之眼」意象 */
+/** Moon logo — the same "lidless eye" motif as the desktop app */
 export function MoonMark(props: IconProps) {
   return (
     <svg {...base({ ...props, fill: "currentColor", stroke: "none" })}>
@@ -28,7 +28,7 @@ export function MoonMark(props: IconProps) {
   );
 }
 
-/* ── 通用 ──────────────────────────────────────────── */
+/* ── Common ────────────────────────────────────────── */
 
 export function GithubIcon(props: IconProps) {
   return (
@@ -71,7 +71,7 @@ export function ArrowRight(props: IconProps) {
   );
 }
 
-/* ── 功能区图标 ─────────────────────────────────────── */
+/* ── Feature section icons ─────────────────────────── */
 
 const featureIcons = {
   switch: (props: IconProps) => (
@@ -123,7 +123,7 @@ export function FeatureIcon({
   return <Cmp {...props} />;
 }
 
-/* ── 用例区图标 ─────────────────────────────────────── */
+/* ── Use case section icons ────────────────────────── */
 
 const useCaseIcons: Record<
   UseCaseIconKey,

@@ -1,18 +1,21 @@
 /**
- * Sanity 内容模型参考 —— 这是「口子」的另一端。
+ * Sanity content model reference — this is the other end of the integration point.
  *
- * 这个文件不会被官网构建引用，纯粹是给你接 Sanity 时的样例：
- * 在你的 Sanity Studio 项目里把它放进 schema，字段形状要和
- * apps/web/src/lib/cms/types.ts、queries.ts 对得上即可。
+ * This file is not referenced by the website build; it's purely a sample for
+ * when you wire up Sanity: drop it into the schema of your Sanity Studio
+ * project, making sure the field shapes match
+ * apps/web/src/lib/cms/types.ts and queries.ts.
  *
- * 多语言建议用文档级 i18n 插件 @sanity/document-internationalization，
- * 它会给每个文档加一个 `language` 字段（"en" / "zh"），正好对应 queries.ts 里的查询。
+ * For multiple languages, we recommend the document-level i18n plugin
+ * @sanity/document-internationalization. It adds a `language` field
+ * ("en" / "zh") to each document, which lines up exactly with the query in
+ * queries.ts.
  *
- * 接入步骤大致是：
- *   1. 新建 Sanity 项目，拿到 projectId
- *   2. 在官网环境里设 NEXT_PUBLIC_SANITY_PROJECT_ID（见 .env.example）
- *   3. 把下面的 schema 放进 Studio，发布几条 useCase
- *   4. 官网会自动从 demo 数据切换到 Sanity 内容
+ * The integration steps roughly are:
+ *   1. Create a new Sanity project and get its projectId
+ *   2. Set NEXT_PUBLIC_SANITY_PROJECT_ID in the website's environment (see .env.example)
+ *   3. Drop the schema below into Studio and publish a few useCase entries
+ *   4. The website will automatically switch from demo data to Sanity content
  */
 import { defineField, defineType } from "sanity";
 
@@ -23,7 +26,7 @@ export const useCase = defineType({
   fields: [
     defineField({
       name: "tag",
-      title: "Tag（小标签，如 Claude Code）",
+      title: "Tag (short label, e.g. Claude Code)",
       type: "string",
       validation: (rule) => rule.required().max(40),
     }),
@@ -44,7 +47,7 @@ export const useCase = defineType({
       name: "icon",
       title: "Icon",
       type: "string",
-      // 与 apps/web/src/lib/cms/types.ts 的 UseCaseIconKey 保持一致
+      // Keep in sync with UseCaseIconKey in apps/web/src/lib/cms/types.ts
       options: {
         list: [
           { title: "Terminal", value: "terminal" },
@@ -60,12 +63,13 @@ export const useCase = defineType({
     }),
     defineField({
       name: "order",
-      title: "Order（排序，越小越靠前）",
+      title: "Order (lower comes first)",
       type: "number",
       initialValue: 100,
     }),
-    // `language` 字段由 @sanity/document-internationalization 自动管理，
-    // 无需手写；这里仅作说明。
+    // The `language` field is managed automatically by
+    // @sanity/document-internationalization; no need to write it by hand.
+    // It's mentioned here only for clarity.
   ],
   orderings: [
     {

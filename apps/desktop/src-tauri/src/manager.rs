@@ -1,12 +1,14 @@
-//! 状态机 + 后台 monitor 线程。
+//! State machine + background monitor thread.
 //!
-//! 设计要点：**所有操作系统级保活调用都只发生在 monitor 这一个线程上**，
-//! 因为 Windows 的 SetThreadExecutionState 是线程私有的。前端命令只修改标志位
-//! 并唤醒 monitor，由 monitor 统一执行 engage/disengage。
+//! Key design point: **all OS-level keep-awake calls happen on the single
+//! monitor thread**, because Windows' SetThreadExecutionState is thread-local.
+//! Frontend commands only flip flags and wake the monitor, which performs
+//! engage/disengage centrally.
 //!
-//! 用 generation 计数 + Condvar 消除「丢失唤醒」竞态：命令在持锁时自增 generation
-//! 并 notify；monitor 处理完后若发现 generation 未变才进入带超时的等待，
-//! 超时（2s）用于轮询电源变化（插拔电源）。
+//! A generation counter + Condvar eliminates the "lost wakeup" race: a command
+//! increments the generation while holding the lock and notifies; after
+//! handling, the monitor only enters a timed wait if the generation is
+//! unchanged. The timeout (2s) is used to poll power changes (plug/unplug).
 
 use std::sync::{Arc, Condvar, Mutex};
 use std::time::Duration;
@@ -19,13 +21,13 @@ use crate::power;
 
 #[derive(Clone, Serialize, PartialEq)]
 pub struct Status {
-    /// 用户是否打开了开关
+    /// Whether the user has turned the switch on
     pub desired: bool,
-    /// 系统层面当前是否真的在保活
+    /// Whether keep-awake is actually engaged at the system level right now
     pub engaged: bool,
-    /// 是否「仅插电时生效」
+    /// Whether "only when plugged in" is enabled
     pub ac_only: bool,
-    /// 当前是否接通电源：Some(true)=插电, Some(false)=电池, None=未知
+    /// Current power source: Some(true)=plugged in, Some(false)=battery, None=unknown
     pub on_ac: Option<bool>,
     pub platform: String,
 }
@@ -103,7 +105,8 @@ impl Manager {
     }
 }
 
-/// 启动后台 monitor 线程。该线程是唯一执行 OS 级保活调用的线程。
+/// Start the background monitor thread. It is the only thread that performs
+/// OS-level keep-awake calls.
 pub fn spawn_monitor(app: AppHandle, mgr: Arc<Manager>) {
     std::thread::Builder::new()
         .name("lidless-monitor".into())
@@ -112,10 +115,11 @@ pub fn spawn_monitor(app: AppHandle, mgr: Arc<Manager>) {
             let mut last_status: Option<Status> = None;
 
             loop {
-                // 1) 在锁外采样电源状态（macOS 下会 spawn pmset，不宜持锁进行）
+                // 1) Sample the power state outside the lock (on macOS this spawns
+                //    pmset, which shouldn't run while holding the lock)
                 let on_ac = power::on_ac_power();
 
-                // 2) 持锁：更新状态、计算目标、必要时做 OS 调用
+                // 2) Hold the lock: update state, compute the target, make the OS call if needed
                 let (status, seen_gen) = {
                     let mut g = mgr.inner.lock().unwrap();
                     g.on_ac = on_ac;
@@ -128,46 +132,46 @@ pub fn spawn_monitor(app: AppHandle, mgr: Arc<Manager>) {
                         };
                         match res {
                             Ok(()) => g.engaged = should,
-                            Err(e) => eprintln!("[lidless] 保活调用失败: {e}"),
+                            Err(e) => eprintln!("[lidless] keep-awake call failed: {e}"),
                         }
                     }
                     (mgr.snapshot_locked(&g), g.generation)
                 };
 
-                // 3) 状态有变化才更新托盘 + 通知前端
+                // 3) Only update the tray + notify the frontend when the status changed
                 if last_status.as_ref() != Some(&status) {
                     update_tray(&app, status.engaged);
                     let _ = app.emit("status-changed", &status);
                     last_status = Some(status);
                 }
 
-                // 4) 等待命令唤醒（generation 变化）或 2s 超时（轮询电源变化）
+                // 4) Wait for a command to wake us (generation change) or a 2s timeout (poll power changes)
                 let g = mgr.inner.lock().unwrap();
                 if g.generation == seen_gen {
                     let _ = mgr.cv.wait_timeout(g, Duration::from_secs(2)).unwrap();
                 }
-                // 否则期间已有命令到达，直接进入下一轮重新评估
+                // Otherwise a command already arrived; loop and re-evaluate immediately
             }
         })
-        .expect("无法启动 monitor 线程");
+        .expect("failed to start monitor thread");
 }
 
-/// 托盘操作需在主线程执行，故 marshal 过去。
+/// Tray operations must run on the main thread, so marshal over to it.
 fn update_tray(app: &AppHandle, engaged: bool) {
     let app = app.clone();
     let _ = app.clone().run_on_main_thread(move || {
         if let Some(tray) = app.tray_by_id("main") {
             let tip = if engaged {
-                "Lidless — 已保活（系统不睡眠）"
+                "Lidless — active (system won't sleep)"
             } else {
-                "Lidless — 未启用"
+                "Lidless — off"
             };
             let _ = tray.set_tooltip(Some(tip));
         }
     });
 }
 
-// ---------- Tauri 命令 ----------
+// ---------- Tauri commands ----------
 
 #[tauri::command]
 pub fn get_status(mgr: State<'_, Arc<Manager>>) -> Status {
@@ -187,9 +191,9 @@ pub fn set_ac_only(ac_only: bool, mgr: State<'_, Arc<Manager>>) -> Status {
 #[derive(Serialize)]
 pub struct SystemReport {
     pub platform: String,
-    /// Windows 是否启用了 Modern Standby (S0)；其它平台为 None
+    /// Whether Windows has Modern Standby (S0) enabled; None on other platforms
     pub modern_standby: Option<bool>,
-    /// 需要提醒用户的注意事项（如有）
+    /// A note to surface to the user, if any
     pub note: Option<String>,
 }
 
@@ -200,9 +204,10 @@ pub fn system_report() -> SystemReport {
         let ms = win_modern_standby();
         let note = if ms == Some(true) {
             Some(
-                "检测到 Modern Standby (S0)：锁屏后无线网卡仍可能被切断。\
-                 建议在「设备管理器 → 网络适配器 → 你的无线网卡 → 属性 → 电源管理」\
-                 取消勾选「允许计算机关闭此设备以节约电源」。"
+                "Modern Standby (S0) detected: the wireless adapter may still be cut off after \
+                 locking. We recommend unchecking \"Allow the computer to turn off this device to \
+                 save power\" under Device Manager -> Network adapters -> your wireless adapter -> \
+                 Properties -> Power Management."
                     .into(),
             )
         } else {
@@ -234,7 +239,7 @@ pub fn system_report() -> SystemReport {
 
 #[cfg(target_os = "windows")]
 fn win_modern_standby() -> Option<bool> {
-    // 注册表 CsEnabled=1 表示启用了 Connected/Modern Standby（与系统语言无关）
+    // Registry CsEnabled=1 means Connected/Modern Standby is enabled (language-independent)
     let out = std::process::Command::new("reg")
         .args([
             "query",

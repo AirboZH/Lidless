@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,14 +12,14 @@
         <div class="moon" id="moon"></div>
         <div class="brand-text">
           <h1>Lidless</h1>
-          <p class="tag">锁屏不睡眠 · 网络不掉线</p>
+          <p class="tag">Stay awake when locked · stay online</p>
         </div>
       </header>
 
       <section class="toggle-row">
         <div class="toggle-meta">
-          <div class="toggle-label">保持唤醒</div>
-          <div class="toggle-sub" id="stateText">未启用</div>
+          <div class="toggle-label">Keep awake</div>
+          <div class="toggle-sub" id="stateText">Off</div>
         </div>
         <button class="switch" id="switch" role="switch" aria-checked="false">
           <span class="knob"></span>
@@ -28,7 +28,7 @@
 
       <label class="option">
         <input type="checkbox" id="acOnly" />
-        <span class="option-label">仅在插电时生效</span>
+        <span class="option-label">Only when plugged in</span>
         <span class="power" id="powerText"></span>
       </label>
 
@@ -36,7 +36,7 @@
 
       <footer class="foot">
         <span id="platformText"></span>
-        <span>关闭窗口 = 最小化到托盘</span>
+        <span>Closing the window = minimize to tray</span>
       </footer>
     </main>
     <script src="main.js"></script>

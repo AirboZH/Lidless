@@ -1,4 +1,4 @@
-//! 其它平台（如 Linux）的占位实现，仅保证可编译。
+//! Placeholder implementation for other platforms (e.g. Linux); compiles only.
 
 pub struct Awake;
 
@@ -8,7 +8,7 @@ impl Awake {
     }
 
     pub fn engage(&mut self) -> Result<(), String> {
-        Err("当前平台暂不支持保持唤醒".into())
+        Err("keep-awake is not supported on this platform yet".into())
     }
 
     pub fn disengage(&mut self) -> Result<(), String> {

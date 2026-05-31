@@ -3,7 +3,7 @@ import { locales } from "@/i18n/routing";
 import { localizedUrl } from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  // 首页（每种语言一条），并在每条上声明 hreflang alternates
+  // Home page (one entry per locale), each declaring its hreflang alternates
   const languages = Object.fromEntries(
     locales.map((loc) => [loc, localizedUrl(loc, "/")]),
   );

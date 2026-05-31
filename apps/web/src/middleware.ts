@@ -4,6 +4,6 @@ import { routing } from "./i18n/routing";
 export default createMiddleware(routing);
 
 export const config = {
-  // 匹配所有路径，但跳过 api、Next 内部静态资源，以及带扩展名的文件（图片、sitemap.xml 等）
+  // Match all paths, but skip api, Next's internal static assets, and files with an extension (images, sitemap.xml, etc.)
   matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
 };

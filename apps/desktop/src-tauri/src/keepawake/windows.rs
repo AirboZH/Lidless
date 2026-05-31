@@ -1,11 +1,13 @@
-//! Windows 实现：用 `SetThreadExecutionState` 阻止系统睡眠，并开启 away mode
-//! （屏幕可黑，但系统与后台进程照常运行——正好对应「锁屏但不睡眠」）。
+//! Windows implementation: use `SetThreadExecutionState` to prevent system
+//! sleep and enable away mode (the screen may turn off, but the system and
+//! background processes keep running — exactly "locked but not sleeping").
 //!
-//! - ES_SYSTEM_REQUIRED   告诉系统「有人在用」，重置空闲睡眠计时器
-//! - ES_AWAYMODE_REQUIRED away 模式：屏幕熄灭、系统不真正睡眠，远程访问可继续
-//! - ES_CONTINUOUS        让上述状态持续有效，直到下一次只传 ES_CONTINUOUS 复位
+//! - ES_SYSTEM_REQUIRED   tells the system "someone is using it", resetting the idle-sleep timer
+//! - ES_AWAYMODE_REQUIRED away mode: the screen turns off, the system doesn't truly sleep, remote access keeps working
+//! - ES_CONTINUOUS        keeps the above state in effect until the next call passes ES_CONTINUOUS alone to reset it
 //!
-//! 注意：刻意**不**加 ES_DISPLAY_REQUIRED，这样锁屏后屏幕可以正常熄灭省电。
+//! Note: we deliberately do **not** add ES_DISPLAY_REQUIRED, so the screen can
+//! still turn off normally after locking to save power.
 
 const ES_CONTINUOUS: u32 = 0x8000_0000;
 const ES_SYSTEM_REQUIRED: u32 = 0x0000_0001;
@@ -26,7 +28,8 @@ impl Awake {
     }
 
     pub fn engage(&mut self) -> Result<(), String> {
-        // 返回值是「上一个状态」，全新线程时可能为 0，故不据此判失败。
+        // The return value is the "previous state"; it may be 0 on a brand-new
+        // thread, so we don't treat that as a failure.
         unsafe {
             SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED);
         }

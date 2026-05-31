@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { defaultLocale, locales, type Locale } from "@/i18n/routing";
 import { siteConfig, siteUrl } from "@/config/site";
 
-/** 把 (语言, 路径) 拼成绝对 URL，遵循 localePrefix: "as-needed"（默认语言无前缀）*/
+/** Builds an absolute URL from (locale, path), following localePrefix: "as-needed" (no prefix for the default locale) */
 export function localizedUrl(locale: Locale, path = "/"): string {
   const prefix = locale === defaultLocale ? "" : `/${locale}`;
   const clean = path === "/" ? "" : path.replace(/\/$/, "");
@@ -10,9 +10,9 @@ export function localizedUrl(locale: Locale, path = "/"): string {
 }
 
 /**
- * canonical + hreflang。每个页面都应该给出：
- *  - canonical 指向当前语言版本
- *  - languages 列出所有语言版本 + x-default
+ * canonical + hreflang. Every page should provide:
+ *  - canonical pointing to the current language version
+ *  - languages listing all language versions + x-default
  */
 export function buildAlternates(
   locale: Locale,
@@ -30,7 +30,7 @@ export function buildAlternates(
   };
 }
 
-/** SoftwareApplication 结构化数据 —— 帮助 Google 把 Lidless 识别成一款可下载软件 */
+/** SoftwareApplication structured data — helps Google recognize Lidless as a downloadable piece of software */
 export function softwareApplicationJsonLd(opts: {
   name: string;
   description: string;
@@ -57,7 +57,7 @@ export function softwareApplicationJsonLd(opts: {
   };
 }
 
-/** FAQPage 结构化数据 —— 有机会拿到搜索结果里的 FAQ 富摘要 */
+/** FAQPage structured data — a chance to earn the FAQ rich snippet in search results */
 export function faqJsonLd(items: { q: string; a: string }[]) {
   return {
     "@context": "https://schema.org",
@@ -73,7 +73,7 @@ export function faqJsonLd(items: { q: string; a: string }[]) {
   };
 }
 
-/** 站点级 WebSite 结构化数据 */
+/** Site-level WebSite structured data */
 export function websiteJsonLd(opts: { name: string; description: string }) {
   return {
     "@context": "https://schema.org",

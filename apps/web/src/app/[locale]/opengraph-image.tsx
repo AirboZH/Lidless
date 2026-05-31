@@ -45,7 +45,7 @@ export default async function OpengraphImage({
           fontFamily: "sans-serif",
         }}
       >
-        {/* 品牌行 */}
+        {/* Brand row */}
         <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
           <div
             style={{
@@ -61,7 +61,7 @@ export default async function OpengraphImage({
           </div>
         </div>
 
-        {/* 主标题 */}
+        {/* Headline */}
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           <div
             style={{
@@ -76,7 +76,7 @@ export default async function OpengraphImage({
           <div style={{ fontSize: "34px", color: "#8b93b8" }}>{c.tag}</div>
         </div>
 
-        {/* 底部 */}
+        {/* Footer */}
         <div
           style={{
             display: "flex",

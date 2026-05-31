@@ -7,7 +7,7 @@ import type { Locale } from "@/i18n/routing";
 export async function UseCases() {
   const t = await getTranslations("UseCases");
   const locale = (await getLocale()) as Locale;
-  // 内容来自 Sanity；未配置 CMS 时回退到本地 demo 数据
+  // Content comes from Sanity; falls back to local demo data when no CMS is configured
   const useCases = await getUseCases(locale);
 
   return (

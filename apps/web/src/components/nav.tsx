@@ -36,7 +36,7 @@ export function Nav() {
           Lidless
         </Link>
 
-        {/* 桌面端导航链接 */}
+        {/* Desktop navigation links */}
         <ul className="hidden items-center gap-7 text-sm text-muted md:flex">
           {sections.map((s) => (
             <li key={s.id}>
@@ -71,7 +71,7 @@ export function Nav() {
             {t("download")}
           </a>
 
-          {/* 移动端汉堡 */}
+          {/* Mobile hamburger */}
           <button
             type="button"
             aria-label="Menu"
@@ -97,7 +97,7 @@ export function Nav() {
         </div>
       </nav>
 
-      {/* 移动端展开菜单 */}
+      {/* Mobile expanded menu */}
       {open && (
         <div className="border-t border-white/5 bg-bg/95 px-5 py-4 md:hidden">
           <ul className="flex flex-col gap-1 text-sm">

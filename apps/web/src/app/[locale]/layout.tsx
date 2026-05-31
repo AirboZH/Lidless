@@ -42,8 +42,9 @@ export async function generateMetadata({
     applicationName: siteConfig.name,
     authors: [{ name: siteConfig.name }],
     alternates,
-    // og:image / twitter:image 由 file-based 的 app/[locale]/opengraph-image.tsx
-    // 自动按语言注入正确的绝对 URL，这里不再手写以免重复。
+    // og:image / twitter:image are injected automatically with the correct
+    // per-locale absolute URL by the file-based app/[locale]/opengraph-image.tsx,
+    // so we don't set them here to avoid duplication.
     openGraph: {
       type: "website",
       siteName: siteConfig.name,
@@ -83,7 +84,7 @@ export default async function LocaleLayout({
   if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
-  // 启用该语言的静态渲染
+  // Enable static rendering for this locale
   setRequestLocale(locale);
   const messages = await getMessages();
 

@@ -19,14 +19,14 @@ pub fn run() {
         .plugin(tauri_plugin_positioner::init())
         .manage(mgr)
         .setup(|app| {
-            // macOS：作为附件运行，不显示 Dock 图标（菜单栏小工具风格）
+            // macOS: run as an accessory so no Dock icon shows (menu-bar utility style)
             #[cfg(target_os = "macos")]
             app.set_activation_policy(tauri::ActivationPolicy::Accessory);
 
-            // ---- 系统托盘 ----
-            let toggle_i = MenuItem::with_id(app, "toggle", "切换保持唤醒", true, None::<&str>)?;
-            let show_i = MenuItem::with_id(app, "show", "显示窗口", true, None::<&str>)?;
-            let quit_i = MenuItem::with_id(app, "quit", "退出 Lidless", true, None::<&str>)?;
+            // ---- System tray ----
+            let toggle_i = MenuItem::with_id(app, "toggle", "Toggle keep awake", true, None::<&str>)?;
+            let show_i = MenuItem::with_id(app, "show", "Show window", true, None::<&str>)?;
+            let quit_i = MenuItem::with_id(app, "quit", "Quit Lidless", true, None::<&str>)?;
             let menu = Menu::with_items(
                 app,
                 &[
@@ -40,7 +40,7 @@ pub fn run() {
             TrayIconBuilder::with_id("main")
                 .icon(app.default_window_icon().unwrap().clone())
                 .menu(&menu)
-                .tooltip("Lidless — 未启用")
+                .tooltip("Lidless — off")
                 .show_menu_on_left_click(false)
                 .on_menu_event(|app, event| match event.id.as_ref() {
                     "quit" => app.exit(0),
@@ -53,7 +53,7 @@ pub fn run() {
                     _ => {}
                 })
                 .on_tray_icon_event(|tray, event| {
-                    // 缓存托盘图标位置，供 positioner 计算弹窗坐标
+                    // Cache the tray icon position so positioner can compute the popover coordinates
                     tauri_plugin_positioner::on_tray_event(tray.app_handle(), &event);
                     if let TrayIconEvent::Click {
                         button: MouseButton::Left,
@@ -66,18 +66,18 @@ pub fn run() {
                 })
                 .build(app)?;
 
-            // ---- 后台 monitor 线程 ----
+            // ---- Background monitor thread ----
             let mgr = app.state::<Arc<AwakeManager>>().inner().clone();
             manager::spawn_monitor(app.handle().clone(), mgr);
 
             Ok(())
         })
         .on_window_event(|window, event| match event {
-            // 失去焦点即隐藏：点击窗口以外任何地方都会收起弹窗
+            // Hide on focus loss: clicking anywhere outside the window dismisses the popover
             tauri::WindowEvent::Focused(false) => {
                 let _ = window.hide();
             }
-            // 无边框窗口没有关闭按钮，保险起见把关闭请求也转成隐藏
+            // The frameless window has no close button; turn close requests into hide just in case
             tauri::WindowEvent::CloseRequested { api, .. } => {
                 let _ = window.hide();
                 api.prevent_close();
@@ -91,13 +91,13 @@ pub fn run() {
             manager::system_report,
         ])
         .run(tauri::generate_context!())
-        .expect("运行 Lidless 时出错");
+        .expect("error while running Lidless");
 }
 
 fn show_popover(app: &tauri::AppHandle) {
     if let Some(w) = app.get_webview_window("main") {
-        // Windows 任务栏通常在下方 → 弹窗在托盘上方；
-        // macOS 菜单栏在上方 → 弹窗在托盘下方。
+        // The Windows taskbar is usually at the bottom -> popover above the tray;
+        // the macOS menu bar is at the top -> popover below the tray.
         #[cfg(target_os = "macos")]
         let pos = Position::TrayBottomCenter;
         #[cfg(not(target_os = "macos"))]

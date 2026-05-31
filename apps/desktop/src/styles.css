@@ -26,7 +26,7 @@ body {
 body {
   font-family: -apple-system, "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
   color: var(--text);
-  /* 透明窗口：可见表面完全由 .card 提供，窗口四角因此透明（圆角悬浮效果） */
+  /* Transparent window: the visible surface is entirely the .card, so the window corners stay transparent (rounded floating effect) */
   background: transparent;
   padding: 10px;
   -webkit-user-select: none;
@@ -52,7 +52,7 @@ body {
     inset 0 0 0 1px rgba(108, 140, 255, 0.3), 0 0 42px rgba(108, 140, 255, 0.18);
 }
 
-/* 品牌区 */
+/* Brand */
 .brand {
   display: flex;
   align-items: center;
@@ -86,7 +86,7 @@ body {
   margin-top: 2px;
 }
 
-/* 主开关 */
+/* Main switch */
 .toggle-row {
   display: flex;
   align-items: center;
@@ -140,7 +140,7 @@ body {
   transform: translateX(26px);
 }
 
-/* 选项 */
+/* Option */
 .option {
   display: flex;
   align-items: center;
@@ -167,7 +167,7 @@ body {
   color: var(--muted);
 }
 
-/* 警告条 */
+/* Warning bar */
 .warn {
   font-size: 12.5px;
   line-height: 1.6;
@@ -178,7 +178,7 @@ body {
   padding: 12px 14px;
 }
 
-/* 底部 */
+/* Footer */
 .foot {
   margin-top: auto;
   display: flex;
