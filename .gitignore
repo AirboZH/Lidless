@@ -1,13 +1,33 @@
+# Dependencies
 node_modules/
-dist/
+.pnpm-store/
 
-# Rust / Tauri
-src-tauri/target/
-src-tauri/gen/schemas/
+# Build output
+dist/
+out/
+
+# Rust / Tauri (apps/desktop)
+apps/desktop/src-tauri/target/
+apps/desktop/src-tauri/gen/schemas/
+
+# Next.js (apps/web)
+apps/web/.next/
+apps/web/.vercel/
+apps/web/next-env.d.ts
+apps/web/.env*.local
+
+# Sanity
+apps/web/.sanity/
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Build logs
+# Logs
 build.log
+*.log
+
+# Editor
+.idea/
+.vscode/*
+!.vscode/extensions.json

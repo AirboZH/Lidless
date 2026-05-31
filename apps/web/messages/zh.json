@@ -1,0 +1,161 @@
+{
+  "Meta": {
+    "title": "Lidless — 锁屏也让 Mac 保持唤醒",
+    "description": "Lidless 是一个极简的 macOS 菜单栏小工具：锁屏时阻止 Mac 进入睡眠，让长任务、下载和远程会话继续跑。屏幕照常熄灭省电，系统保持唤醒。",
+    "ogAlt": "Lidless — 锁屏也让 Mac 保持唤醒",
+    "keywords": [
+      "Mac 保持唤醒",
+      "Mac 锁屏不睡眠",
+      "阻止 Mac 睡眠",
+      "锁屏保活",
+      "Mac 防睡眠工具",
+      "菜单栏 防睡眠",
+      "Mac 锁屏保持在线",
+      "Claude Code 远程",
+      "RustDesk 保活",
+      "Amphetamine 替代"
+    ]
+  },
+  "Nav": {
+    "features": "功能",
+    "useCases": "使用场景",
+    "how": "工作原理",
+    "faq": "常见问题",
+    "github": "GitHub",
+    "download": "下载",
+    "language": "语言",
+    "skipToContent": "跳到正文"
+  },
+  "Hero": {
+    "badge": "macOS 菜单栏应用",
+    "titleLine1": "Mac 看起来睡着了，",
+    "titleLine2": "活儿还在继续跑。",
+    "subtitle": "Lidless 让你的 Mac 在锁屏时保持唤醒。屏幕照常熄灭省电——系统、下载和远程会话却不会断。一个开关，仅此而已。",
+    "download": "下载 macOS 版",
+    "downloadMeta": "免费 · macOS {min}+ · v{version}",
+    "github": "在 GitHub 查看",
+    "trust": "无需账号 · 无常驻后台 · 无 Dock 图标"
+  },
+  "AppPanel": {
+    "title": "Lidless",
+    "tag": "锁屏不睡眠 · 网络不掉线",
+    "toggleLabel": "保持唤醒",
+    "toggleState": "已保活 · 系统不会睡眠",
+    "acOnly": "仅在插电时生效",
+    "power": "已接通电源",
+    "platform": "macOS",
+    "footnote": "关闭窗口 = 最小化到托盘"
+  },
+  "Features": {
+    "title": "小而专，把一件事做好",
+    "subtitle": "没有臃肿，没有看不见的后台服务，只留下真正要用的开关。",
+    "items": [
+      {
+        "icon": "switch",
+        "title": "一键保活",
+        "description": "拨一下开关，Mac 就不会自己睡过去。屏幕照样变暗、锁定——只是不再进入空闲系统睡眠。"
+      },
+      {
+        "icon": "plug",
+        "title": "仅插电时生效",
+        "description": "可选：拔掉电源自动暂停，插上自动恢复。笔记本放在沙发上也不怕被悄悄耗光电。"
+      },
+      {
+        "icon": "tray",
+        "title": "常驻菜单栏",
+        "description": "没有 Dock 图标，也没有常开窗口。点托盘图标弹出小面板，点别处自动收起，后台继续保活。"
+      },
+      {
+        "icon": "cross",
+        "title": "跨平台",
+        "description": "同一个「一个开关」的工具在 Windows 上也能跑，并会在 Modern Standby 机型上提示无线网卡省电的处理办法。"
+      },
+      {
+        "icon": "feather",
+        "title": "轻量原生",
+        "description": "基于 Tauri，系统调用全手写——没有 Electron，没有笨重运行时。安静地待在那儿，几乎不占资源。"
+      },
+      {
+        "icon": "lock",
+        "title": "数据不出本机",
+        "description": "没有账号、没有埋点、自身不发任何网络请求。Lidless 只和系统电源 API 打交道，仅此而已。"
+      }
+    ]
+  },
+  "UseCases": {
+    "title": "为「你离开的那段时间」而做",
+    "subtitle": "锁上屏幕、走开，让机器自己把活干完。人们常常让它挂着跑这些："
+  },
+  "How": {
+    "title": "它到底怎么工作的",
+    "subtitle": "没有歪招，也不靠假装晃鼠标。Lidless 用官方支持的方式，规规矩矩地请求 macOS 先别睡。",
+    "steps": [
+      {
+        "title": "持有一个电源断言",
+        "description": "在 macOS 上，Lidless 创建 IOKit 的 PreventUserIdleSystemSleep 断言——和系统自己用的是同一套机制。系统保持唤醒，屏幕则可以正常熄灭。"
+      },
+      {
+        "title": "盯着电源状态",
+        "description": "一个后台线程轮询电源状态。开启「仅插电时生效」后，拔电会干净地释放断言，插电再恢复。"
+      },
+      {
+        "title": "尽量不打扰你",
+        "description": "没有常驻窗口，不占 Dock。托盘面板点击才出现、失焦就收起，而断言始终在后台持有。"
+      }
+    ],
+    "techNote": "所有系统调用都是手写 FFI（macOS 用 IOKit，Windows 用 SetThreadExecutionState），不依赖第三方电源 crate。完全开源，每一行都能在 GitHub 上看。"
+  },
+  "Faq": {
+    "title": "常见问题",
+    "subtitle": "下载前大家通常会问的几个问题。",
+    "items": [
+      {
+        "q": "屏幕会一直亮着吗？",
+        "a": "不会——这正是重点。屏幕照常熄灭、锁定，既省电又保护隐私。被阻止的只是系统的空闲睡眠，所以后台任务能在一块锁定的黑屏后面继续跑。"
+      },
+      {
+        "q": "和 Amphetamine、Caffeine 有什么不同？",
+        "a": "核心思路一样——让 Mac 别睡——但 Lidless 刻意做得极简：一个开关、一个「仅插电生效」选项，以及一个用完就消失的托盘面板。而且它跨平台、完全开源。"
+      },
+      {
+        "q": "能让我远程连回 Mac 吗？",
+        "a": "可以。因为系统始终不睡，网络就不会断，锁屏期间 SSH、RustDesk、VNC、屏幕共享都保持可达。"
+      },
+      {
+        "q": "会很耗电吗？",
+        "a": "保持系统唤醒确实比睡眠更耗电，所以笔记本建议开启「仅插电时生效」——这样用电池时 Lidless 自动暂停，插电后再恢复。"
+      },
+      {
+        "q": "安全吗？它会访问什么？",
+        "a": "Lidless 只调用操作系统的电源管理 API。没有账号、没有埋点、自身不产生任何网络流量。源码全在 GitHub，可以自行核对。"
+      },
+      {
+        "q": "有 Windows 版本吗？",
+        "a": "有。同一个「一个开关」的应用在 Windows 上也能用，并会针对无线网卡会休眠的 Modern Standby 机型额外给出提示。"
+      }
+    ]
+  },
+  "CtaBand": {
+    "title": "让活儿醒着，人尽管走开。",
+    "subtitle": "免费、开源，且不打扰你。",
+    "download": "下载 macOS 版"
+  },
+  "Footer": {
+    "tagline": "锁屏不睡眠 · 网络不掉线。机器看起来睡着了，那只不闭的眼睛却始终醒着。",
+    "productHeading": "产品",
+    "resourcesHeading": "资源",
+    "features": "功能",
+    "useCases": "使用场景",
+    "how": "工作原理",
+    "faq": "常见问题",
+    "download": "下载",
+    "github": "GitHub",
+    "rights": "© {year} Lidless · 基于 MIT 协议开源。",
+    "builtWith": "由 Tauri 与 Next.js 构建"
+  },
+  "NotFound": {
+    "title": "页面不存在",
+    "description": "眼睛眨了一下。这个地址下什么都没有。",
+    "home": "回到首页"
+  }
+}

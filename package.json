@@ -1,16 +1,20 @@
 {
-  "name": "lidless",
+  "name": "lidless-monorepo",
   "version": "0.1.0",
   "private": true,
-  "description": "锁屏保活：插电锁屏时阻止系统睡眠、保持网络在线",
+  "description": "Lidless monorepo：桌面端锁屏保活 app (apps/desktop) 与官网 (apps/web)",
   "packageManager": "pnpm@10.24.0",
-  "scripts": {
-    "tauri": "tauri",
-    "dev": "tauri dev",
-    "build": "tauri build",
-    "icon": "tauri icon ./app-icon.png"
+  "engines": {
+    "node": ">=20"
   },
-  "devDependencies": {
-    "@tauri-apps/cli": "^2"
+  "scripts": {
+    "desktop": "pnpm --filter @lidless/desktop",
+    "desktop:dev": "pnpm --filter @lidless/desktop dev",
+    "desktop:build": "pnpm --filter @lidless/desktop build",
+    "web": "pnpm --filter @lidless/web",
+    "web:dev": "pnpm --filter @lidless/web dev",
+    "web:build": "pnpm --filter @lidless/web build",
+    "web:start": "pnpm --filter @lidless/web start",
+    "web:lint": "pnpm --filter @lidless/web lint"
   }
 }

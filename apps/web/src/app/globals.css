@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+/* ── 品牌 token（取自桌面 app 的深色夜空配色）──────────────── */
+@theme {
+  --color-bg: #0b1022;
+  --color-bg-soft: #161d3d;
+  --color-ink: #e9edff;
+  --color-muted: #8b93b8;
+  --color-accent: #6c8cff;
+  --color-accent-bright: #8aa3ff;
+
+  --font-sans: var(--font-inter), -apple-system, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+}
+
+/* 半透明描边 / 卡片表面（rgba，不参与色板生成，单独声明便于复用）*/
+:root {
+  --hairline: rgba(255, 255, 255, 0.09);
+  --surface: rgba(255, 255, 255, 0.04);
+  --accent-glow: rgba(108, 140, 255, 0.45);
+}
+
+* {
+  min-width: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* 锚点跳转时给固定导航留出空间 */
+  scroll-padding-top: 5.5rem;
+}
+
+body {
+  background-color: var(--color-bg);
+  /* 顶部一抹冷光，向下沉入夜色 */
+  background-image: radial-gradient(
+    120% 90% at 50% -10%,
+    var(--color-bg-soft) 0%,
+    var(--color-bg) 58%
+  );
+  background-attachment: fixed;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgba(108, 140, 255, 0.32);
+  color: #fff;
+}
+
+/* 可复用的描边 / 表面工具类 */
+@utility border-hairline {
+  border-color: var(--hairline);
+}
+@utility bg-surface {
+  background-color: var(--surface);
+}
+
+/* 强调色光晕，按钮与发光元素复用 */
+@utility shadow-glow {
+  box-shadow: 0 0 0 1px rgba(108, 140, 255, 0.35),
+    0 12px 40px -8px var(--accent-glow);
+}
+
+/* 尊重「减少动态效果」偏好 */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -1,0 +1,162 @@
+{
+  "Meta": {
+    "title": "Lidless — Keep your Mac awake while it's locked",
+    "description": "Lidless is a tiny macOS menu bar app that stops your Mac from sleeping while the screen is locked, so long tasks, downloads and remote sessions keep running. Let the display sleep; keep the system awake.",
+    "ogAlt": "Lidless — keep your Mac awake while locked",
+    "keywords": [
+      "keep Mac awake",
+      "prevent Mac from sleeping",
+      "keep Mac awake when locked",
+      "stop Mac sleeping",
+      "keep Mac online when locked",
+      "macOS keep awake app",
+      "menu bar keep awake",
+      "caffeine for Mac",
+      "amphetamine alternative",
+      "keep awake for Claude Code",
+      "remote access keep awake"
+    ]
+  },
+  "Nav": {
+    "features": "Features",
+    "useCases": "Use cases",
+    "how": "How it works",
+    "faq": "FAQ",
+    "github": "GitHub",
+    "download": "Download",
+    "language": "Language",
+    "skipToContent": "Skip to content"
+  },
+  "Hero": {
+    "badge": "macOS menu bar app",
+    "titleLine1": "Your Mac looks asleep.",
+    "titleLine2": "The work keeps running.",
+    "subtitle": "Lidless keeps your Mac awake while the screen is locked. The display can switch off to save power — the system, your downloads and your remote sessions stay alive. One switch, that's it.",
+    "download": "Download for macOS",
+    "downloadMeta": "Free · macOS {min}+ · v{version}",
+    "github": "View on GitHub",
+    "trust": "No account. No daemon. No dock icon."
+  },
+  "AppPanel": {
+    "title": "Lidless",
+    "tag": "Stay awake when locked · stay online",
+    "toggleLabel": "Keep awake",
+    "toggleState": "Active · system won't sleep",
+    "acOnly": "Only when plugged in",
+    "power": "Plugged in",
+    "platform": "macOS",
+    "footnote": "Closing the window = minimize to tray"
+  },
+  "Features": {
+    "title": "Small app, one job, done right",
+    "subtitle": "No bloat, no background services you can't see. Just the controls that matter.",
+    "items": [
+      {
+        "icon": "switch",
+        "title": "One-tap keep awake",
+        "description": "Flip one switch and your Mac won't fall asleep. The screen still dims and locks normally — only idle system sleep is blocked."
+      },
+      {
+        "icon": "plug",
+        "title": "Only when plugged in",
+        "description": "Optionally pause on battery and resume the moment you plug back in. Great for laptops you don't want draining on the couch."
+      },
+      {
+        "icon": "tray",
+        "title": "Lives in the menu bar",
+        "description": "No dock icon, no always-on window. Click the tray icon for a little panel; click away and it tucks itself back while staying active."
+      },
+      {
+        "icon": "cross",
+        "title": "Cross-platform",
+        "description": "The same one-switch tool runs on Windows too, with a Modern Standby hint when your wireless adapter would otherwise nap."
+      },
+      {
+        "icon": "feather",
+        "title": "Featherweight & native",
+        "description": "Built on Tauri with hand-written system calls — no Electron, no heavyweight runtime. It just sits there sipping nothing."
+      },
+      {
+        "icon": "lock",
+        "title": "Nothing leaves your Mac",
+        "description": "No account, no telemetry, no network calls of its own. Lidless only talks to the OS power APIs — and nothing else."
+      }
+    ]
+  },
+  "UseCases": {
+    "title": "Built for the moments you step away",
+    "subtitle": "Lock the screen, walk off, and let the machine keep working. A few of the things people leave running:"
+  },
+  "How": {
+    "title": "How it actually works",
+    "subtitle": "No tricks, no fake mouse jiggling. Lidless asks macOS — politely, the supported way — to hold off on sleep.",
+    "steps": [
+      {
+        "title": "It holds a power assertion",
+        "description": "On macOS, Lidless creates an IOKit PreventUserIdleSystemSleep assertion — the same mechanism the OS itself uses. The system stays awake; the display is free to sleep."
+      },
+      {
+        "title": "It watches the power source",
+        "description": "A single background thread polls power state. With \"only when plugged in\" on, unplugging cleanly releases the assertion and plugging back in restores it."
+      },
+      {
+        "title": "It gets out of your way",
+        "description": "No persistent window, no dock clutter. The tray panel appears on click and hides on blur, while the assertion keeps holding in the background."
+      }
+    ],
+    "techNote": "All OS calls are hand-written FFI (IOKit on macOS, SetThreadExecutionState on Windows) with no third-party power crates. Open source — read every line on GitHub."
+  },
+  "Faq": {
+    "title": "Frequently asked questions",
+    "subtitle": "The things people ask before downloading.",
+    "items": [
+      {
+        "q": "Does the screen stay on the whole time?",
+        "a": "No — and that's the point. Your display sleeps and locks normally to save power and stay private. Only the system's idle sleep is blocked, so background work keeps running behind a locked, dark screen."
+      },
+      {
+        "q": "How is this different from Amphetamine or Caffeine?",
+        "a": "Same core idea — keep the Mac awake — but Lidless is deliberately minimal: one switch, a plugged-in-only option, and a tray panel that disappears when you don't need it. It's also cross-platform and fully open source."
+      },
+      {
+        "q": "Will it keep my Mac online for remote access?",
+        "a": "Yes. Because the system never goes to sleep, network stays up, so SSH, RustDesk, VNC and Screen Sharing remain reachable while the Mac is locked."
+      },
+      {
+        "q": "Does it drain my battery?",
+        "a": "Keeping the system awake uses more power than sleeping, so on a laptop we recommend the \"only when plugged in\" option — Lidless then pauses on battery and resumes when you plug in."
+      },
+      {
+        "q": "Is it safe? What does it access?",
+        "a": "Lidless only calls the operating system's power-management APIs. No account, no telemetry, no network traffic of its own. The full source is on GitHub if you'd like to verify."
+      },
+      {
+        "q": "Is there a Windows version?",
+        "a": "Yes. The same one-switch app runs on Windows, with an extra hint for Modern Standby machines whose Wi-Fi adapter would otherwise sleep."
+      }
+    ]
+  },
+  "CtaBand": {
+    "title": "Keep the work awake. Walk away.",
+    "subtitle": "Free, open source, and out of your way.",
+    "download": "Download for macOS"
+  },
+  "Footer": {
+    "tagline": "Stay awake when locked · stay online. The machine looks asleep; the unlidded eye stays open.",
+    "productHeading": "Product",
+    "resourcesHeading": "Resources",
+    "features": "Features",
+    "useCases": "Use cases",
+    "how": "How it works",
+    "faq": "FAQ",
+    "download": "Download",
+    "github": "GitHub",
+    "rights": "© {year} Lidless. Open source under the MIT License.",
+    "builtWith": "Built with Tauri & Next.js"
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "description": "The eye blinked. There's nothing at this address.",
+    "home": "Back home"
+  }
+}
