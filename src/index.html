@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lidless</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="card" id="card">
+      <header class="brand">
+        <div class="moon" id="moon"></div>
+        <div class="brand-text">
+          <h1>Lidless</h1>
+          <p class="tag">锁屏不睡眠 · 网络不掉线</p>
+        </div>
+      </header>
+
+      <section class="toggle-row">
+        <div class="toggle-meta">
+          <div class="toggle-label">保持唤醒</div>
+          <div class="toggle-sub" id="stateText">未启用</div>
+        </div>
+        <button class="switch" id="switch" role="switch" aria-checked="false">
+          <span class="knob"></span>
+        </button>
+      </section>
+
+      <label class="option">
+        <input type="checkbox" id="acOnly" />
+        <span class="option-label">仅在插电时生效</span>
+        <span class="power" id="powerText"></span>
+      </label>
+
+      <div class="warn" id="warn" hidden></div>
+
+      <footer class="foot">
+        <span id="platformText"></span>
+        <span>关闭窗口 = 最小化到托盘</span>
+      </footer>
+    </main>
+    <script src="main.js"></script>
+  </body>
+</html>

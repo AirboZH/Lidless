@@ -1,0 +1,24 @@
+[package]
+name = "lidless"
+version = "0.1.0"
+description = "锁屏保活：插电锁屏时阻止系统睡眠、保持网络在线，方便远程使用 Claude Code / RustDesk"
+authors = ["Zhang Bo"]
+edition = "2021"
+rust-version = "1.82"
+
+# main.rs 调用 lib.rs 里的 run()，库名加 _lib 后缀避免与可执行文件同名冲突
+[lib]
+name = "lidless_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["macos-private-api", "tray-icon"] }
+tauri-plugin-positioner = { version = "2", features = ["tray-icon"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Windows / macOS 的保活与电源检测全部用手写 FFI（见 src/keepawake、src/power），
+# 不引第三方 crate，避免依赖随版本变化。

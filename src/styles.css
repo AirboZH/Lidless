@@ -1,0 +1,188 @@
+:root {
+  --bg-1: #0b1022;
+  --bg-2: #161d3d;
+  --card: rgba(255, 255, 255, 0.04);
+  --line: rgba(255, 255, 255, 0.09);
+  --text: #e9edff;
+  --muted: #8b93b8;
+  --accent: #6c8cff;
+  --accent-glow: rgba(108, 140, 255, 0.55);
+  --warn-bg: rgba(255, 184, 71, 0.12);
+  --warn-line: rgba(255, 184, 71, 0.45);
+  --warn-text: #ffcd86;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: -apple-system, "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+  color: var(--text);
+  /* 透明窗口：可见表面完全由 .card 提供，窗口四角因此透明（圆角悬浮效果） */
+  background: transparent;
+  padding: 10px;
+  -webkit-user-select: none;
+  user-select: none;
+  overflow: hidden;
+}
+
+.card {
+  height: 100%;
+  padding: 24px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: radial-gradient(120% 120% at 50% 0%, var(--bg-2) 0%, var(--bg-1) 62%);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: box-shadow 0.4s ease;
+}
+
+.card.active {
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 1px rgba(108, 140, 255, 0.3), 0 0 42px rgba(108, 140, 255, 0.18);
+}
+
+/* 品牌区 */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.moon {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #e9eeff;
+  box-shadow: inset -14px -3px 0 -2px var(--bg-1);
+  transition: box-shadow 0.4s ease, filter 0.4s ease;
+  flex-shrink: 0;
+}
+
+.card.active .moon {
+  box-shadow: inset -3px 0 0 -1px rgba(108, 140, 255, 0.25);
+  filter: drop-shadow(0 0 10px var(--accent-glow));
+}
+
+.brand h1 {
+  font-size: 22px;
+  letter-spacing: 0.5px;
+}
+
+.tag {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* 主开关 */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--card);
+}
+
+.toggle-label {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.toggle-sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.switch {
+  position: relative;
+  width: 58px;
+  height: 32px;
+  border: none;
+  border-radius: 999px;
+  background: #2a3160;
+  cursor: pointer;
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+  flex-shrink: 0;
+}
+
+.switch.on {
+  background: var(--accent);
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+
+.knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.25s cubic-bezier(0.4, 1.4, 0.6, 1);
+}
+
+.switch.on .knob {
+  transform: translateX(26px);
+}
+
+/* 选项 */
+.option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.option input {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.option-label {
+  flex-shrink: 0;
+}
+
+.power {
+  margin-left: auto;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* 警告条 */
+.warn {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--warn-text);
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-line);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+/* 底部 */
+.foot {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: var(--muted);
+}
