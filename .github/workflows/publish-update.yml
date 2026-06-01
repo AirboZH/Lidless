@@ -1,0 +1,53 @@
+name: Activate update
+
+# After you "Publish" a draft Release, push its latest.json into Cloudflare KV so the
+# update service goes live for all users. This keeps "build -> draft" separate from
+# "publish -> activate update": draft assets aren't publicly downloadable yet, so users
+# are never offered an update that points at an unavailable file.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  push-to-kv:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install api dependencies
+        run: pnpm install --frozen-lockfile --filter @lidless/update-api
+
+      # Download the merged latest.json (covers both mac + win) from the published Release
+      - name: Download latest.json from the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          gh release download "${{ github.event.release.tag_name }}"
+          --repo "${{ github.repository }}"
+          --pattern latest.json
+          --dir "${{ github.workspace }}"
+          --clobber
+
+      # Write the manifest to the release:latest KV key; the Worker serves updates from it
+      - name: Push manifest to Cloudflare KV
+        working-directory: apps/api
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: >-
+          pnpm exec wrangler kv key put
+          --binding=UPDATES release:latest
+          --path="${{ github.workspace }}/latest.json"

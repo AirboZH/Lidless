@@ -10,7 +10,9 @@ use std::sync::Arc;
 use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::Manager;
+use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
 use tauri_plugin_positioner::{Position, WindowExt};
+use tauri_plugin_updater::UpdaterExt;
 
 use crate::manager::Manager as AwakeManager;
 
@@ -20,6 +22,8 @@ pub fn run() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_positioner::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_dialog::init())
         .manage(mgr)
         .setup(|app| {
             // macOS: run as an accessory so no Dock icon shows (menu-bar utility style)
@@ -79,6 +83,14 @@ pub fn run() {
             // ---- Local control channel (entry point for the agent hook) ----
             control::start(mgr);
 
+            // ---- Check for updates on startup (non-blocking) ----
+            let updater_handle = app.handle().clone();
+            tauri::async_runtime::spawn(async move {
+                if let Err(e) = check_for_update(updater_handle).await {
+                    eprintln!("[updater] update check failed: {e}");
+                }
+            });
+
             Ok(())
         })
         .on_window_event(|window, event| match event {
@@ -119,4 +131,41 @@ fn show_popover(app: &tauri::AppHandle) {
         let _ = w.show();
         let _ = w.set_focus();
     }
+}
+
+/// Check the configured updater endpoint on startup. If a newer version is
+/// published, ask the user first (so an in-progress keep-awake session isn't
+/// interrupted without consent), then download, install and relaunch.
+///
+/// The download is verified against the minisign public key embedded in
+/// tauri.conf.json, so a compromised endpoint cannot push a malicious update.
+async fn check_for_update(app: tauri::AppHandle) -> tauri_plugin_updater::Result<()> {
+    let Some(update) = app.updater()?.check().await? else {
+        return Ok(()); // already on the latest version
+    };
+
+    let prompt = format!(
+        "A new version {} is available (current {}).\n\nDownload and install now? Lidless will restart to apply it.",
+        update.version, update.current_version
+    );
+    let approved = app
+        .dialog()
+        .message(prompt)
+        .title("Lidless update available")
+        .buttons(MessageDialogButtons::OkCancelCustom(
+            "Update now".to_string(),
+            "Later".to_string(),
+        ))
+        .blocking_show();
+
+    if !approved {
+        return Ok(());
+    }
+
+    update
+        .download_and_install(|_received, _total| {}, || {})
+        .await?;
+
+    // The new version is staged on disk; relaunch to run it. restart() never returns.
+    app.restart()
 }

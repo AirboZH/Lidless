@@ -9,6 +9,8 @@ out/
 # Rust / Tauri (apps/desktop)
 apps/desktop/src-tauri/target/
 apps/desktop/src-tauri/gen/schemas/
+# Local signing key env vars (loaded by dotenvx); never commit
+apps/desktop/.env
 
 # Next.js (apps/web)
 apps/web/.next/
@@ -18,6 +20,11 @@ apps/web/.env*.local
 
 # Sanity
 apps/web/.sanity/
+
+# Cloudflare Workers (apps/api)
+apps/api/.wrangler/
+apps/api/.dev.vars
+apps/api/worker-configuration.d.ts
 
 # OS
 .DS_Store

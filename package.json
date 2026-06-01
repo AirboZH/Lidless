@@ -15,6 +15,12 @@
     "web:dev": "pnpm --filter @lidless/web dev",
     "web:build": "pnpm --filter @lidless/web build",
     "web:start": "pnpm --filter @lidless/web start",
-    "web:lint": "pnpm --filter @lidless/web lint"
+    "web:lint": "pnpm --filter @lidless/web lint",
+    "api": "pnpm --filter @lidless/update-api",
+    "api:dev": "pnpm --filter @lidless/update-api dev",
+    "api:deploy": "pnpm --filter @lidless/update-api run deploy"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild", "workerd"]
   }
 }

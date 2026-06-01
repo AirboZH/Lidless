@@ -1,0 +1,81 @@
+name: Release
+
+# Build the desktop installers and publish them to GitHub Releases (as a draft).
+# Triggers: pushing a v* tag, or a manual run from the Actions tab (tag required).
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Release tag, e.g. v0.1.0 (required for manual runs)"
+        required: true
+        default: "v0.0.0-dev"
+
+# Allow tauri-action to create the Release
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # macOS: universal binary (Intel + Apple Silicon), produces .dmg
+          - platform: macos-latest
+            args: "--target universal-apple-darwin"
+            rust_targets: "aarch64-apple-darwin,x86_64-apple-darwin"
+          # Windows: produces .msi + .exe (NSIS)
+          - platform: windows-latest
+            args: ""
+            rust_targets: ""
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust_targets }}
+
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "./apps/desktop/src-tauri -> target"
+
+      # Only the desktop deps are needed (the frontend is static, no build step)
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --filter @lidless/desktop
+
+      - name: Build, sign and upload to a draft release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Update-signing key (minisign). Private key + password live in repo secrets, never committed.
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          projectPath: apps/desktop
+          tagName: ${{ github.event.inputs.tag_name || github.ref_name }}
+          releaseName: "Lidless ${{ github.event.inputs.tag_name || github.ref_name }}"
+          releaseBody: |
+            Pick the installer for your platform below.
+
+            > macOS is unsigned: on first launch, right-click the app icon and choose "Open".
+          releaseDraft: true
+          prerelease: false
+          # Generate and upload latest.json (the update service's data source: per-platform URL + signature)
+          includeUpdaterJson: true
+          args: ${{ matrix.args }}
