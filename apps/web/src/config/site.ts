@@ -21,7 +21,7 @@ export const githubUrl =
 
 // Public feedback / feature-request board (Fider).
 export const feedbackUrl =
-  process.env.NEXT_PUBLIC_FEEDBACK_URL ?? "https://roadmap.lidless.cc";
+  process.env.NEXT_PUBLIC_FEEDBACK_URL ?? "https://lidless.fider.io/";
 
 export const siteConfig = {
   name: "Lidless",
