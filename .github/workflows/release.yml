@@ -66,6 +66,14 @@ jobs:
           # Update-signing key (minisign). Private key + password live in repo secrets, never committed.
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          # Apple code signing + notarization (used by the macOS job; ignored on Windows).
+          # tauri-action imports the cert into a temp keychain, then signs and notarizes the .app/.dmg.
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         with:
           projectPath: apps/desktop
           tagName: ${{ github.event.inputs.tag_name || github.ref_name }}
@@ -73,7 +81,7 @@ jobs:
           releaseBody: |
             Pick the installer for your platform below.
 
-            > macOS is unsigned: on first launch, right-click the app icon and choose "Open".
+            > macOS builds are signed with a Developer ID and notarized by Apple.
           releaseDraft: true
           prerelease: false
           # Generate and upload latest.json (the update service's data source: per-platform URL + signature)
