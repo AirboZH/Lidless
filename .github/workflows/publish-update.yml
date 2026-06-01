@@ -50,4 +50,5 @@ jobs:
         run: >-
           pnpm exec wrangler kv key put
           --binding=UPDATES release:latest
+          --preview false
           --path="${{ github.workspace }}/latest.json"
