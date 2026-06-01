@@ -20,6 +20,12 @@ tauri-plugin-positioner = { version = "2", features = ["tray-icon"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
+# Local control channel: a tiny HTTP server bound to 127.0.0.1 only, used by
+# the agent hook to drive keep-awake.
+tiny_http = "0.12"
+# Preserve the user's comments and formatting when editing Codex's config.toml (for one-click setup).
+toml_edit = "0.22"
+
 # Keep-awake and power detection on Windows / macOS are all hand-written FFI
 # (see src/keepawake, src/power), with no third-party crates so dependencies
-# don't shift across versions.
+# don't shift across versions. The control channel uses the two lightweight crates above.

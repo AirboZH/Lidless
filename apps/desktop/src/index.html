@@ -32,11 +32,37 @@
         <span class="power" id="powerText"></span>
       </label>
 
+      <section class="auto" id="auto">
+        <div class="auto-head">
+          <div class="toggle-meta">
+            <div class="toggle-label">Auto keep-awake with agents</div>
+            <div class="toggle-sub" id="autoSub">Off</div>
+          </div>
+          <button class="switch" id="autoSwitch" role="switch" aria-checked="false">
+            <span class="knob"></span>
+          </button>
+        </div>
+        <div class="auto-extra">
+          <div class="integrations">
+            <button class="chip" id="claudeBtn" data-target="claude">
+              <span class="chip-dot"></span>Claude Code
+            </button>
+            <button class="chip" id="codexBtn" data-target="codex">
+              <span class="chip-dot"></span>Codex
+            </button>
+          </div>
+          <div class="auto-hint" id="autoHint">
+            Once connected: Claude Code keeps the system awake while working and
+            turns it off after it finishes and goes idle; Codex turns it off when done.
+          </div>
+        </div>
+      </section>
+
       <div class="warn" id="warn" hidden></div>
 
       <footer class="foot">
         <span id="platformText"></span>
-        <span>Closing the window = minimize to tray</span>
+        <span>Click outside to dismiss · quit from the tray menu</span>
       </footer>
     </main>
     <script src="main.js"></script>

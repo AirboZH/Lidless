@@ -1,3 +1,6 @@
+pub mod cli;
+mod control;
+mod integrations;
 mod keepawake;
 mod manager;
 mod power;
@@ -43,7 +46,10 @@ pub fn run() {
                 .tooltip("Lidless — off")
                 .show_menu_on_left_click(false)
                 .on_menu_event(|app, event| match event.id.as_ref() {
-                    "quit" => app.exit(0),
+                    "quit" => {
+                        control::cleanup_endpoint();
+                        app.exit(0);
+                    }
                     "show" => show_popover(app),
                     "toggle" => {
                         let mgr = app.state::<Arc<AwakeManager>>();
@@ -68,7 +74,10 @@ pub fn run() {
 
             // ---- Background monitor thread ----
             let mgr = app.state::<Arc<AwakeManager>>().inner().clone();
-            manager::spawn_monitor(app.handle().clone(), mgr);
+            manager::spawn_monitor(app.handle().clone(), mgr.clone());
+
+            // ---- Local control channel (entry point for the agent hook) ----
+            control::start(mgr);
 
             Ok(())
         })
@@ -88,7 +97,11 @@ pub fn run() {
             manager::get_status,
             manager::set_desired,
             manager::set_ac_only,
+            manager::set_auto_enabled,
             manager::system_report,
+            integrations::integration_status,
+            integrations::install_integration,
+            integrations::remove_integration,
         ])
         .run(tauri::generate_context!())
         .expect("error while running Lidless");

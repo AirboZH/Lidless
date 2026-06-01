@@ -10,8 +10,9 @@
 //! handling, the monitor only enters a timed wait if the generation is
 //! unchanged. The timeout (2s) is used to poll power changes (plug/unplug).
 
+use std::collections::HashMap;
 use std::sync::{Arc, Condvar, Mutex};
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use serde::Serialize;
 use tauri::{AppHandle, Emitter, State};
@@ -29,6 +30,12 @@ pub struct Status {
     pub ac_only: bool,
     /// Current power source: Some(true)=plugged in, Some(false)=battery, None=unknown
     pub on_ac: Option<bool>,
+    /// Whether "auto keep-awake with agents" is enabled (i.e. the hook lease layer is active)
+    pub auto_enabled: bool,
+    /// Whether keep-awake is currently held by an agent lease (auto_enabled and an unexpired lease exists)
+    pub auto_active: bool,
+    /// Number of currently unexpired agent leases
+    pub active_leases: u32,
     pub platform: String,
 }
 
@@ -37,6 +44,10 @@ struct Inner {
     ac_only: bool,
     engaged: bool,
     on_ac: Option<bool>,
+    /// Master switch for "auto keep-awake with agents"
+    auto_enabled: bool,
+    /// Agent leases: session_id -> expiry instant. Any unexpired lease keeps the system awake.
+    leases: HashMap<String, Instant>,
     generation: u64,
 }
 
@@ -63,6 +74,8 @@ impl Manager {
                 ac_only: false,
                 engaged: false,
                 on_ac: None,
+                auto_enabled: true,
+                leases: HashMap::new(),
                 generation: 0,
             }),
             cv: Condvar::new(),
@@ -70,11 +83,16 @@ impl Manager {
     }
 
     fn snapshot_locked(&self, g: &Inner) -> Status {
+        let now = Instant::now();
+        let active = g.leases.values().filter(|exp| **exp > now).count() as u32;
         Status {
             desired: g.desired,
             engaged: g.engaged,
             ac_only: g.ac_only,
             on_ac: g.on_ac,
+            auto_enabled: g.auto_enabled,
+            auto_active: g.auto_enabled && active > 0,
+            active_leases: active,
             platform: platform_name(),
         }
     }
@@ -103,6 +121,68 @@ impl Manager {
         self.cv.notify_all();
         s
     }
+
+    pub fn set_auto_enabled(&self, enabled: bool) -> Status {
+        let mut g = self.inner.lock().unwrap();
+        g.auto_enabled = enabled;
+        g.generation = g.generation.wrapping_add(1);
+        let s = self.snapshot_locked(&g);
+        drop(g);
+        self.cv.notify_all();
+        s
+    }
+
+    /// Renew an agent lease (triggered by an activity event). `ttl` is the
+    /// crash-safety upper bound: if the agent process exits abnormally without
+    /// sending a finish signal, the lease still expires automatically after ttl.
+    pub fn lease_refresh(&self, id: String, ttl: Duration) -> Status {
+        let mut g = self.inner.lock().unwrap();
+        g.leases.insert(id, Instant::now() + ttl);
+        g.generation = g.generation.wrapping_add(1);
+        let s = self.snapshot_locked(&g);
+        drop(g);
+        self.cv.notify_all();
+        s
+    }
+
+    /// Release an agent lease (triggered by a finish event). When `grace`>0 it
+    /// only **shortens** the expiry to now+grace (never extends an existing
+    /// earlier expiry), leaving a renewal window for the next prompt in
+    /// interactive mode; when `grace`==0 it removes the lease immediately.
+    pub fn lease_release(&self, id: String, grace: Duration) -> Status {
+        let mut g = self.inner.lock().unwrap();
+        if grace.is_zero() {
+            g.leases.remove(&id);
+        } else {
+            let exp = Instant::now() + grace;
+            g.leases
+                .entry(id)
+                .and_modify(|e| {
+                    if exp < *e {
+                        *e = exp;
+                    }
+                })
+                .or_insert(exp);
+        }
+        g.generation = g.generation.wrapping_add(1);
+        let s = self.snapshot_locked(&g);
+        drop(g);
+        self.cv.notify_all();
+        s
+    }
+
+    /// Force everything off: turn off the manual switch and clear all agent
+    /// leases ("I'm done, let it sleep").
+    pub fn force_off(&self) -> Status {
+        let mut g = self.inner.lock().unwrap();
+        g.desired = false;
+        g.leases.clear();
+        g.generation = g.generation.wrapping_add(1);
+        let s = self.snapshot_locked(&g);
+        drop(g);
+        self.cv.notify_all();
+        s
+    }
 }
 
 /// Start the background monitor thread. It is the only thread that performs
@@ -123,7 +203,12 @@ pub fn spawn_monitor(app: AppHandle, mgr: Arc<Manager>) {
                 let (status, seen_gen) = {
                     let mut g = mgr.inner.lock().unwrap();
                     g.on_ac = on_ac;
-                    let should = g.desired && (!g.ac_only || on_ac.unwrap_or(true));
+                    // Drop expired leases (piggybacks on the 2s poll, no extra timer needed)
+                    let now = Instant::now();
+                    g.leases.retain(|_, exp| *exp > now);
+                    // The manual switch OR (auto enabled && a live lease exists) requires keep-awake
+                    let want = g.desired || (g.auto_enabled && !g.leases.is_empty());
+                    let should = want && (!g.ac_only || on_ac.unwrap_or(true));
                     if should != g.engaged {
                         let res = if should {
                             awake.engage()
@@ -186,6 +271,11 @@ pub fn set_desired(desired: bool, mgr: State<'_, Arc<Manager>>) -> Status {
 #[tauri::command]
 pub fn set_ac_only(ac_only: bool, mgr: State<'_, Arc<Manager>>) -> Status {
     mgr.set_ac_only(ac_only)
+}
+
+#[tauri::command]
+pub fn set_auto_enabled(enabled: bool, mgr: State<'_, Arc<Manager>>) -> Status {
+    mgr.set_auto_enabled(enabled)
 }
 
 #[derive(Serialize)]

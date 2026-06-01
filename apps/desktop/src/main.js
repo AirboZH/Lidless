@@ -10,6 +10,11 @@ const els = {
   powerText: document.getElementById("powerText"),
   warn: document.getElementById("warn"),
   platformText: document.getElementById("platformText"),
+  auto: document.getElementById("auto"),
+  autoSwitch: document.getElementById("autoSwitch"),
+  autoSub: document.getElementById("autoSub"),
+  claudeBtn: document.getElementById("claudeBtn"),
+  codexBtn: document.getElementById("codexBtn"),
 };
 
 function render(s) {
@@ -31,6 +36,13 @@ function render(s) {
 
   const names = { windows: "Windows", macos: "macOS" };
   els.platformText.textContent = names[s.platform] || s.platform;
+
+  els.autoSwitch.classList.toggle("on", s.auto_enabled);
+  els.autoSwitch.setAttribute("aria-checked", String(s.auto_enabled));
+  els.auto.classList.toggle("on", s.auto_enabled);
+  if (!s.auto_enabled) els.autoSub.textContent = "Off";
+  else if (s.active_leases > 0) els.autoSub.textContent = `Agent active · ${s.active_leases} session(s)`;
+  else els.autoSub.textContent = "Waiting for agent activity";
 }
 
 els.switch.addEventListener("click", async () => {
@@ -42,11 +54,45 @@ els.acOnly.addEventListener("change", async () => {
   render(await invoke("set_ac_only", { acOnly: els.acOnly.checked }));
 });
 
+els.autoSwitch.addEventListener("click", async () => {
+  const next = !els.autoSwitch.classList.contains("on");
+  render(await invoke("set_auto_enabled", { enabled: next }));
+});
+
+// Integration badge: installed → green dot + "remove" action; not installed → "connect"
+function renderIntegrations(st) {
+  const apply = (btn, on) => {
+    btn.classList.toggle("on", on);
+    btn.title = on ? "Click to remove integration" : "Click to connect";
+  };
+  apply(els.claudeBtn, st.claude_code);
+  apply(els.codexBtn, st.codex);
+}
+
+async function toggleIntegration(btn) {
+  const target = btn.dataset.target;
+  const installed = btn.classList.contains("on");
+  btn.disabled = true;
+  try {
+    await invoke(installed ? "remove_integration" : "install_integration", { target });
+    renderIntegrations(await invoke("integration_status"));
+  } catch (e) {
+    els.warn.hidden = false;
+    els.warn.textContent = "⚠ " + e;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+els.claudeBtn.addEventListener("click", () => toggleIntegration(els.claudeBtn));
+els.codexBtn.addEventListener("click", () => toggleIntegration(els.codexBtn));
+
 // Refresh live whenever the background monitor's status changes
 listen("status-changed", (e) => render(e.payload));
 
 (async () => {
   render(await invoke("get_status"));
+  renderIntegrations(await invoke("integration_status"));
   const report = await invoke("system_report");
   if (report && report.note) {
     els.warn.hidden = false;
