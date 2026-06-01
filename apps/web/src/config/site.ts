@@ -19,11 +19,16 @@ export const downloadUrl =
 export const githubUrl =
   process.env.NEXT_PUBLIC_GITHUB_URL ?? "https://github.com/AirboZH/Lidless";
 
+// Public feedback / feature-request board (Fider).
+export const feedbackUrl =
+  process.env.NEXT_PUBLIC_FEEDBACK_URL ?? "https://roadmap.lidless.cc";
+
 export const siteConfig = {
   name: "Lidless",
   url: siteUrl,
   downloadUrl,
   githubUrl,
+  feedbackUrl,
   // Current released version and system requirement (shown near the download button)
   appVersion: "0.1.0",
   minMacOS: "12.0",

@@ -48,6 +48,16 @@ export function Nav() {
               </a>
             </li>
           ))}
+          <li>
+            <a
+              href={siteConfig.feedbackUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-ink"
+            >
+              {t("feedback")}
+            </a>
+          </li>
         </ul>
 
         <div className="flex items-center gap-2.5">
@@ -112,6 +122,17 @@ export function Nav() {
                 </a>
               </li>
             ))}
+            <li>
+              <a
+                href={siteConfig.feedbackUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setOpen(false)}
+                className="block rounded-lg px-3 py-2.5 text-muted transition hover:bg-surface hover:text-ink"
+              >
+                {t("feedback")}
+              </a>
+            </li>
           </ul>
           <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/5 pt-4">
             <LanguageSwitcher />
