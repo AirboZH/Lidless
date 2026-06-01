@@ -6,10 +6,12 @@
   "scripts": {
     "tauri": "tauri",
     "dev": "tauri dev",
-    "build": "tauri build",
+    "build": "dotenvx run --quiet --ignore=MISSING_ENV_FILE -- tauri build",
+    "build:raw": "tauri build",
     "icon": "tauri icon ./app-icon.png"
   },
   "devDependencies": {
+    "@dotenvx/dotenvx": "^1.39.0",
     "@tauri-apps/cli": "^2"
   }
 }

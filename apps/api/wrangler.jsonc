@@ -1,0 +1,25 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "lidless-update",
+  "main": "src/index.ts",
+  "compatibility_date": "2024-11-01",
+  "observability": {
+    "enabled": true
+  },
+
+  // KV holds the "latest release manifest" (see ReleaseManifest in src/index.ts).
+  // Namespaces were created with:
+  //   pnpm api exec wrangler kv namespace create UPDATES
+  //   pnpm api exec wrangler kv namespace create UPDATES --preview   # for local dev
+  "kv_namespaces": [
+    {
+      "binding": "UPDATES",
+      "id": "15d318d2383e47ce8de76d9276ea9560",
+      "preview_id": "3c04576de4d540429bad228edbe76a62"
+    }
+  ],
+
+  // Public domain: https://api.lidless.cc (the app's updater endpoint points here).
+  // Requires lidless.cc to be a zone on Cloudflare; deploy creates this custom-domain route.
+  "routes": [{ "pattern": "api.lidless.cc", "custom_domain": true }]
+}
