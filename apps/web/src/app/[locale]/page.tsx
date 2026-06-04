@@ -8,7 +8,7 @@ import { UseCases } from "@/components/sections/use-cases";
 import { HowItWorks } from "@/components/sections/how-it-works";
 import { Faq } from "@/components/sections/faq";
 import { CtaBand } from "@/components/sections/cta-band";
-import type { Locale } from "@/i18n/routing";
+import { defaultLocale, type Locale } from "@/i18n/routing";
 import {
   faqJsonLd,
   organizationJsonLd,
@@ -36,7 +36,7 @@ export default async function HomePage({
           description: tMeta("description"),
         })}
       />
-      <JsonLd data={organizationJsonLd()} />
+      {locale === defaultLocale && <JsonLd data={organizationJsonLd()} />}
       <JsonLd
         data={softwareApplicationJsonLd({
           name: "Lidless",

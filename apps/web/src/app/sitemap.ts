@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { locales, type Locale } from "@/i18n/routing";
+import { defaultLocale, locales, type Locale } from "@/i18n/routing";
 import { getAllDocMeta } from "@/lib/docs/source";
 import { localizedUrl } from "@/lib/seo";
 
@@ -12,6 +12,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const languages = Object.fromEntries(
       locales.map((loc) => [loc, localizedUrl(loc, path)]),
     );
+    // x-default tells Google which version to serve when no language matches.
+    // Mirror the <head> hreflang (buildAlternates) so both signals agree.
+    languages["x-default"] = localizedUrl(defaultLocale, path);
     for (const loc of locales) {
       entries.push({
         url: localizedUrl(loc, path),
@@ -49,6 +52,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const languages = Object.fromEntries(
       present.map((loc) => [loc, localizedUrl(loc, path)]),
     );
+    // x-default points to the default-locale version when it exists for this doc.
+    if (present.includes(defaultLocale)) {
+      languages["x-default"] = localizedUrl(defaultLocale, path);
+    }
     for (const loc of present) {
       entries.push({
         url: localizedUrl(loc, path),

@@ -5,7 +5,7 @@ import { MoonMark } from "./icons";
 
 export async function Footer() {
   const t = await getTranslations("Footer");
-  const year = 2025;
+  const year = new Date().getFullYear();
 
   const product = [
     { href: "#features", label: t("features") },
