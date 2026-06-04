@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { siteConfig } from "@/config/site";
 import { MoonMark } from "./icons";
 
@@ -13,6 +14,7 @@ export async function Footer() {
     { href: "#faq", label: t("faq") },
   ];
   const resources = [
+    { href: "/docs", label: t("docs"), external: false },
     { href: siteConfig.downloadUrl, label: t("download"), external: true },
     { href: siteConfig.githubUrl, label: t("github"), external: true },
   ];
@@ -50,18 +52,26 @@ export async function Footer() {
             {t("resourcesHeading")}
           </h2>
           <ul className="mt-3 space-y-2 text-sm text-muted">
-            {resources.map((l) => (
-              <li key={l.href}>
-                <a
-                  href={l.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="transition-colors hover:text-ink"
-                >
-                  {l.label}
-                </a>
-              </li>
-            ))}
+            {resources.map((l) =>
+              l.external ? (
+                <li key={l.href}>
+                  <a
+                    href={l.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="transition-colors hover:text-ink"
+                  >
+                    {l.label}
+                  </a>
+                </li>
+              ) : (
+                <li key={l.href}>
+                  <Link href={l.href} className="transition-colors hover:text-ink">
+                    {l.label}
+                  </Link>
+                </li>
+              ),
+            )}
           </ul>
         </nav>
       </div>

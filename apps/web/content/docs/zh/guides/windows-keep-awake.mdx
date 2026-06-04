@@ -1,0 +1,102 @@
+---
+title: "Windows 如何让电脑保持唤醒"
+description: "Windows 11/10 保持电脑不睡眠的完整教程：系统设置、PowerToys Awake、powercfg 命令和锁屏场景选择。"
+template: tutorial
+group: "指南"
+order: 30
+updated: 2026-06-04
+---
+
+Windows 上“保持唤醒”至少有两种含义：屏幕不关闭，或电脑不进入睡眠。多数长任务只需要第二种，也就是让系统继续运行，而不必让显示器一直亮。
+
+<Callout type="note" title="先看结论">
+临时保活可以用 PowerToys Awake；锁屏离开、长时间无人值守时，优先改 Windows 电源计划或使用专门的保活工具。PowerToys Awake 官方文档说明它在锁屏界面不生效。
+</Callout>
+
+## 方法一：通过 Windows 设置关闭睡眠
+
+这是最稳的做法，适合下载、渲染、备份、长时间训练、AI 编码任务等无人值守场景。
+
+<Steps>
+<Step title="打开电源设置">
+进入 **设置** → **系统** → **电源和电池**。
+</Step>
+<Step title="展开屏幕、睡眠和休眠超时">
+Windows 11 中通常叫 **屏幕、睡眠和休眠超时**，不同版本文案可能略有差异。
+</Step>
+<Step title="调整插电时的睡眠时间">
+把 **接通电源后，使我的设备进入睡眠状态** 改成 **从不**，或设置为足够长的时间。
+</Step>
+<Step title="保留屏幕关闭时间">
+把 **关闭屏幕** 设成 5 到 15 分钟。这样显示器会休息，但电脑继续工作。
+</Step>
+</Steps>
+
+如果是笔记本，不建议把电池模式下的睡眠也改成从不，除非你非常清楚耗电后果。
+
+## 方法二：用 PowerToys Awake 临时保持唤醒
+
+[PowerToys Awake](https://learn.microsoft.com/en-us/windows/powertoys/awake) 是 Microsoft PowerToys 里的工具，它不会永久修改电源计划，而是在运行时临时请求系统保持唤醒。
+
+适合这些情况：
+
+- 开会投屏，不想中途睡眠。
+- 下载或复制大文件。
+- 临时跑一段脚本。
+- 不想为了一个短任务改系统设置。
+
+PowerToys Awake 提供几种模式：继续使用当前电源计划、无限期保持唤醒、按时间保持唤醒、保持到指定时间。默认情况下，它可以让电脑醒着，但显示器仍会按设置关闭；如果要屏幕也常亮，需要额外打开 **Keep screen on**。
+
+<Callout type="warning" title="锁屏限制">
+PowerToys Awake 在锁屏界面不工作。需要锁屏后继续跑任务时，请直接修改 Windows 电源计划，或使用能在后台服务/系统级保活的工具。
+</Callout>
+
+## 方法三：用命令检查谁在阻止睡眠
+
+当 Windows 明明设置了睡眠却不睡，常见原因是某个程序或驱动持有了电源请求。管理员 PowerShell 或命令提示符里运行：
+
+```powershell
+powercfg /requests
+```
+
+如果看到某个进程出现在 `DISPLAY`、`SYSTEM` 或 `AWAYMODE` 下，它可能正在阻止关闭屏幕或进入睡眠。
+
+查看当前可用的睡眠状态：
+
+```powershell
+powercfg /a
+```
+
+查看最近一次是谁唤醒了电脑：
+
+```powershell
+powercfg /lastwake
+```
+
+生成能耗诊断报告：
+
+```powershell
+powercfg /energy
+```
+
+报告会生成 HTML 文件，适合排查“为什么我的电脑一直不睡”或“为什么睡眠后很耗电”。
+
+## Windows 保持唤醒的推荐配置
+
+| 目标 | 插电设置 | 电池设置 |
+| --- | --- | --- |
+| 长时间下载/编译 | 睡眠：从不；屏幕：5-15 分钟 | 睡眠：15-30 分钟 |
+| 投屏演示 | 用 PowerToys Awake，必要时保持屏幕常亮 | 插电更稳 |
+| 锁屏后跑 AI agent | 睡眠：从不；屏幕可关闭 | 不建议电池无人值守 |
+| 日常办公 | 使用默认或平衡设置 | 保留较短睡眠时间 |
+
+## 安全和耗电提醒
+
+让电脑一直醒着会增加耗电、发热和后台网络活动。离开电脑前请锁屏；如果是公司设备，还要确认 IT 策略没有禁止修改电源计划。公共环境下不要把“保持唤醒”和“免锁屏”混为一谈，前者是让任务继续跑，后者是安全风险。
+
+## 参考资料
+
+- [Microsoft：Power settings in Windows 11](https://support.microsoft.com/en-us/windows/power-settings-in-windows-11-0d6a2b6b-2e87-4611-9980-ac9ea2175734)
+- [Microsoft Learn：PowerToys Awake](https://learn.microsoft.com/en-us/windows/powertoys/awake)
+- [Microsoft Learn：powercfg command-line options](https://learn.microsoft.com/en-us/windows-hardware/design/device-experiences/powercfg-command-line-options)
+

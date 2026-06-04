@@ -11,6 +11,7 @@ import { CtaBand } from "@/components/sections/cta-band";
 import type { Locale } from "@/i18n/routing";
 import {
   faqJsonLd,
+  organizationJsonLd,
   softwareApplicationJsonLd,
   websiteJsonLd,
 } from "@/lib/seo";
@@ -35,6 +36,7 @@ export default async function HomePage({
           description: tMeta("description"),
         })}
       />
+      <JsonLd data={organizationJsonLd()} />
       <JsonLd
         data={softwareApplicationJsonLd({
           name: "Lidless",

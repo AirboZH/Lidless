@@ -1,0 +1,69 @@
+---
+title: "让 Claude Code 整夜继续跑"
+description: "丢给它一个跑很久的任务，锁屏离开，让它自己跑完。"
+template: tutorial
+group: "指南"
+order: 10
+updated: 2026-06-04
+---
+
+一个 agentic 编码任务可能要跑好几个小时。没有 Lidless，锁屏（或让它闲置）会挂起
+系统、把任务卡住。下面是配置方法。
+
+<Callout type="note" title="开始之前">
+你需要先装好 Lidless——见 [快速上手](/docs/getting-started)——并有一个想让它一直
+跑的任务，比如一个 Claude Code 会话。
+</Callout>
+
+## 步骤
+
+<Steps>
+<Step title="打开「保持唤醒」">
+打开菜单栏面板，启用 **保持唤醒**。状态应显示*已保活 · 系统不会睡眠*。
+</Step>
+<Step title="保持插电">
+笔记本请插上电源。开启 **仅在插电时生效** 后，拔电会暂停保活，任务可能因此卡住。
+</Step>
+<Step title="启动任务，然后锁屏">
+跑起任务，然后锁屏——屏幕会熄灭，而系统继续干活。
+</Step>
+<Step title="回来时活儿已经干完">
+稍后解锁，你的任务全程都在推进——没有被暂停的任务，也没有掉线的 SSH 会话。
+</Step>
+</Steps>
+
+## 从终端锁屏
+
+<Tabs>
+<Tab label="macOS">
+
+```bash
+# 立刻熄屏；有 Lidless 在，系统保持唤醒
+pmset displaysleepnow
+```
+
+</Tab>
+<Tab label="Windows">
+
+```powershell
+# 锁定工作站
+rundll32.exe user32.dll,LockWorkStation
+```
+
+</Tab>
+</Tabs>
+
+## 确认是否生效
+
+在 macOS 上，检查保活断言是否被持有：
+
+```bash
+pmset -g assertions
+```
+
+「保持唤醒」打开时，列表里应能看到 `PreventUserIdleSystemSleep`。
+
+<Callout type="warning" title="耗电提醒">
+让系统保持唤醒比睡眠更耗电。用电池时建议开启 **仅在插电时生效**，让 Lidless
+自动退让。
+</Callout>

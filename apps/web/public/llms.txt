@@ -1,0 +1,19 @@
+# Lidless
+
+> Lidless is a free, open-source menu-bar utility for macOS and Windows that keeps the system awake while the display sleeps and the screen is locked. It is a lightweight alternative to Amphetamine, Caffeine, KeepingYouAwake, the macOS `caffeinate` command, and Microsoft PowerToys Awake.
+
+Lidless holds a single OS power assertion (IOKit `PreventUserIdleSystemSleep` on macOS, `SetThreadExecutionState` on Windows) so background work — agentic AI runs, downloads, builds, remote sessions, renders — keeps running behind a locked, dark screen. The display is still free to sleep, so you save power and avoid burn-in. No account, no telemetry, no network calls of its own. Built on Tauri with hand-written FFI; open source under the MIT License.
+
+## Key pages
+
+- [Home](https://lidless.cc/): product overview, features, FAQ, and downloads for macOS and Windows
+
+## Source
+
+- GitHub: https://github.com/AirboZH/Lidless
+- Releases (macOS & Windows): https://github.com/AirboZH/Lidless/releases/latest
+- License: MIT
+
+## How it compares
+
+Lidless occupies the same niche as Amphetamine, Caffeine, KeepingYouAwake, the built-in `caffeinate -i` command on macOS, and PowerToys Awake on Windows. Its differentiators: cross-platform (macOS + Windows), a zero-footprint tray-only UI, a plugged-in-only mode, and a fully open-source, dependency-light native build.

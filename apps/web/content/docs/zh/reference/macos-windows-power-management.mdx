@@ -1,0 +1,132 @@
+---
+title: "macOS 与 Windows 电源管理策略详解"
+description: "系统梳理 macOS 和 Windows 的睡眠、熄屏、休眠、唤醒、电源请求和保活策略，适合长期任务与设备管理参考。"
+template: reference
+group: "参考"
+order: 30
+updated: 2026-06-04
+---
+
+电源管理不是一个开关，而是一组策略：什么时候关屏、什么时候让 CPU 进入低功耗状态、什么时候断开网络、哪些应用可以临时阻止睡眠、设备能否被键盘鼠标或网络唤醒。理解这些概念，才能正确配置长时间任务，而不是简单把所有选项都改成“永不”。
+
+## 核心概念
+
+| 概念 | 含义 | 对长任务的影响 |
+| --- | --- | --- |
+| 关闭屏幕 | 显示器停止显示或背光关闭 | 通常不影响任务运行 |
+| 空闲睡眠 | 系统因无人操作进入低功耗 | 会暂停本地进程、网络和终端任务 |
+| 休眠 | 把内存状态写入磁盘后断电 | 任务会停止，恢复更慢 |
+| 唤醒 | 从睡眠或休眠回到可用状态 | 可能由键盘、鼠标、网络、定时器触发 |
+| 电源请求/断言 | 应用临时告诉系统“先别睡” | `caffeinate`、PowerToys Awake、Lidless 都属于这一类 |
+
+## macOS 的策略模型
+
+macOS 常见策略分成三层：
+
+1. 图形设置：系统设置里的电池、锁定屏幕、节能。
+2. 命令行工具：`pmset` 查看和修改电源配置，`caffeinate` 临时创建保活断言。
+3. 应用断言：应用通过系统 API 告诉 macOS 某段时间内不要睡眠。
+
+MacBook 上最容易混淆的是“显示器关闭”和“系统睡眠”。Apple 的系统设置允许你在插电时开启 **当显示器关闭时，防止使用电源适配器时自动睡眠**。这意味着屏幕可以关，但系统继续运行。
+
+常用诊断命令：
+
+```bash
+# 查看当前阻止睡眠的断言
+pmset -g assertions
+
+# 查看电源相关设置
+pmset -g
+
+# 立刻关闭显示器
+pmset displaysleepnow
+```
+
+`caffeinate` 是 macOS 自带的临时保活工具。它默认阻止空闲睡眠，也可以用 `-d` 防止显示器睡眠、用 `-t` 指定秒数、用 `-w` 绑定某个进程。
+
+## Windows 的策略模型
+
+Windows 的电源管理也分三层：
+
+1. 设置应用：电源模式、节能模式、屏幕/睡眠/休眠超时。
+2. 电源计划：控制面板中的高级电源选项和 `powercfg`。
+3. Power Requests：应用或驱动临时请求系统不要关屏或睡眠。
+
+Windows 11 的设置入口通常是 **设置** → **系统** → **电源和电池**。Microsoft 文档把 **Power Mode**、**Energy Saver**、**Screen, sleep & hibernate timeouts** 都列为影响耗电和体验的关键项。
+
+常用诊断命令：
+
+```powershell
+# 当前有哪些程序或驱动阻止睡眠
+powercfg /requests
+
+# 当前机器支持哪些睡眠状态
+powercfg /a
+
+# 上次是谁唤醒了电脑
+powercfg /lastwake
+
+# 生成能耗诊断报告
+powercfg /energy
+
+# 生成电池报告
+powercfg /batteryreport
+```
+
+PowerToys Awake 属于临时覆盖策略：它运行时让 Windows 保持唤醒，退出后系统回到原电源计划。它适合人在电脑前的临时任务；如果锁屏离开，Microsoft 文档建议直接配置电源计划。
+
+## macOS 和 Windows 的关键差异
+
+| 维度 | macOS | Windows |
+| --- | --- | --- |
+| 临时保活命令 | `caffeinate` | PowerToys Awake 或应用电源请求 |
+| 诊断阻止睡眠 | `pmset -g assertions` | `powercfg /requests` |
+| 图形设置重点 | 电池/节能、锁定屏幕 | 电源和电池、屏幕睡眠休眠超时 |
+| 锁屏后保活 | 取决于断言和系统策略 | 用户态工具可能失效，电源计划更稳 |
+| 合盖行为 | MacBook 合盖策略较强，不等同锁屏 | 笔记本可在电源计划里配置合盖动作 |
+
+## 长任务推荐策略
+
+### 开发者本机
+
+- 插电时禁止系统睡眠。
+- 屏幕 5 到 15 分钟后关闭。
+- 用 Lidless 或 `caffeinate` 做任务级保活。
+- 保留 Git 提交、日志、测试输出，避免长任务没有中间成果。
+
+### 家用服务器或 Mac mini
+
+- 禁止系统自动睡眠。
+- 允许显示器关闭。
+- 开启必要的网络唤醒或远程访问。
+- 定期检查温度、磁盘和日志。
+
+### 笔记本电池模式
+
+- 不建议长期禁止睡眠。
+- 可以只对明确任务使用限时保活。
+- 低电量时让系统自动恢复节能策略。
+
+### AI coding agent
+
+- 系统层面不睡眠。
+- agent 层面限制工作目录和权限。
+- 会话层面保留恢复方式，如 `resume`、`continue`、任务状态文档。
+- 不要用屏幕常亮代替真正的系统保活。
+
+## 排查路径
+
+1. 先判断是屏幕关闭，还是系统真的睡了。
+2. 查看当前电源请求或断言。
+3. 检查插电和电池两套策略是否不同。
+4. 检查锁屏、合盖、远程桌面、VPN、外接硬盘是否引入额外策略。
+5. 只对必要任务保活，任务结束后恢复普通电源策略。
+
+## 参考资料
+
+- [Apple：Set sleep and wake settings for your Mac](https://support.apple.com/en-ie/guide/mac-help/mchle41a6ccd/mac)
+- [caffeinate macOS man page](https://keith.github.io/xcode-man-pages/caffeinate.8.html)
+- [Microsoft：Power settings in Windows 11](https://support.microsoft.com/en-us/windows/power-settings-in-windows-11-0d6a2b6b-2e87-4611-9980-ac9ea2175734)
+- [Microsoft Learn：PowerToys Awake](https://learn.microsoft.com/en-us/windows/powertoys/awake)
+- [Microsoft Learn：powercfg command-line options](https://learn.microsoft.com/en-us/windows-hardware/design/device-experiences/powercfg-command-line-options)
+

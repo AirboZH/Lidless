@@ -21,6 +21,7 @@
     "useCases": "使用场景",
     "how": "工作原理",
     "faq": "常见问题",
+    "docs": "文档",
     "feedback": "反馈",
     "github": "GitHub",
     "download": "下载",
@@ -28,12 +29,13 @@
     "skipToContent": "跳到正文"
   },
   "Hero": {
-    "badge": "macOS 菜单栏应用",
-    "titleLine1": "Mac 看起来睡着了，",
-    "titleLine2": "活儿还在继续跑。",
-    "subtitle": "Lidless 让你的 Mac 在锁屏时保持唤醒。屏幕照常熄灭省电——系统、下载和远程会话却不会断。一个开关，仅此而已。",
+    "badge": "macOS & Windows 菜单栏应用",
+    "titleLine1": "Lidless",
+    "titleLine2": "锁屏时让 Mac 保持唤醒",
+    "subtitle": "Mac 看起来睡着了，下载、编译和远程会话却还在锁屏的黑屏背后继续跑。屏幕熄灭省电，系统保持唤醒。一个开关，仅此而已。",
     "download": "下载 macOS 版",
-    "downloadMeta": "免费 · macOS {min}+ · v{version}",
+    "downloadWindows": "下载 Windows 版",
+    "downloadMeta": "免费 · macOS {min}+ / Windows 10+ · v{version}",
     "github": "在 GitHub 查看",
     "trust": "无需账号 · 无常驻后台 · 无 Dock 图标"
   },
@@ -119,6 +121,10 @@
         "a": "核心思路一样——让 Mac 别睡——但 Lidless 刻意做得极简：一个开关、一个「仅插电生效」选项，以及一个用完就消失的托盘面板。而且它跨平台、完全开源。"
       },
       {
+        "q": "和 caffeinate 命令有什么不同？",
+        "a": "caffeinate -i 是 macOS 内置的终端命令，持有的是同一类电源断言——但你一关终端窗口它就停了，而且没有界面、也没有「仅插电生效」这类选项。Lidless 把同一套机制做成常驻菜单栏的图形开关：拨一次，它就在后台一直持有。任何时候都能用 pmset -g assertions 验证它在生效。"
+      },
+      {
         "q": "能让我远程连回 Mac 吗？",
         "a": "可以。因为系统始终不睡，网络就不会断，锁屏期间 SSH、RustDesk、VNC、屏幕共享都保持可达。"
       },
@@ -132,14 +138,28 @@
       },
       {
         "q": "有 Windows 版本吗？",
-        "a": "有。同一个「一个开关」的应用在 Windows 上也能用，并会针对无线网卡会休眠的 Modern Standby 机型额外给出提示。"
+        "a": "有——点上方的「下载 Windows 版」按钮即可（也可以到 GitHub releases 页面下载 .msi）。同一个「一个开关」的应用在 Windows 上也能用，并会针对无线网卡会休眠的 Modern Standby 机型额外给出提示。"
       }
     ]
   },
   "CtaBand": {
     "title": "让活儿醒着，人尽管走开。",
     "subtitle": "免费、开源，且不打扰你。",
-    "download": "下载 macOS 版"
+    "download": "下载 macOS 版",
+    "downloadWindows": "下载 Windows 版"
+  },
+  "Docs": {
+    "title": "使用文档",
+    "description": "Lidless 的指南、教程与参考。",
+    "onThisPage": "本页目录",
+    "menu": "文档目录",
+    "previous": "上一篇",
+    "next": "下一篇",
+    "updated": "更新于 {date}",
+    "tutorial": "教程",
+    "reference": "参考",
+    "copy": "复制",
+    "copied": "已复制"
   },
   "Footer": {
     "tagline": "锁屏不睡眠 · 网络不掉线。机器看起来睡着了，那只不闭的眼睛却始终醒着。",
@@ -149,6 +169,7 @@
     "useCases": "使用场景",
     "how": "工作原理",
     "faq": "常见问题",
+    "docs": "文档",
     "download": "下载",
     "github": "GitHub",
     "rights": "© {year} Lidless · 基于 MIT 协议开源。",

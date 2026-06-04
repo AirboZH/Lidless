@@ -1,0 +1,132 @@
+---
+title: "macOS and Windows Power Management Explained"
+description: "A practical reference for sleep, display sleep, hibernate, wake, power requests, caffeinate, PowerToys Awake, and long-running tasks on macOS and Windows."
+template: reference
+group: "Reference"
+order: 30
+updated: 2026-06-04
+---
+
+Power management is not one switch. It is a set of policies: when the display turns off, when the CPU enters a low-power state, whether the network stays connected, which apps can prevent sleep, and what is allowed to wake the machine.
+
+## Core concepts
+
+| Concept | Meaning | Impact on long tasks |
+| --- | --- | --- |
+| Display sleep | The screen or backlight turns off | Usually does not stop tasks |
+| Idle sleep | The system sleeps after inactivity | Pauses local processes, network, and terminal work |
+| Hibernate | Memory state is written to disk and power is removed | Tasks stop until resume |
+| Wake | The machine returns from sleep or hibernate | Can be triggered by input, network, or timers |
+| Power request/assertion | An app temporarily asks the OS not to sleep | Used by `caffeinate`, PowerToys Awake, and Lidless |
+
+## macOS power management
+
+macOS has three practical layers:
+
+1. System Settings: Battery, Lock Screen, and Energy Saver.
+2. Command-line tools: `pmset` for settings and diagnostics, `caffeinate` for temporary assertions.
+3. App assertions: apps can request that macOS avoid sleep for a specific reason.
+
+The key distinction is display sleep versus system sleep. Apple provides a setting that prevents automatic sleep while on power adapter when the display is off. That lets the screen go dark while the Mac keeps working.
+
+Useful commands:
+
+```bash
+# Show current sleep-prevention assertions
+pmset -g assertions
+
+# Show power settings
+pmset -g
+
+# Turn the display off now
+pmset displaysleepnow
+```
+
+`caffeinate` is the built-in temporary keep-awake tool. It can prevent idle sleep, prevent display sleep, run for a fixed number of seconds, or attach to a process ID.
+
+## Windows power management
+
+Windows also has three practical layers:
+
+1. Settings: power mode, energy saver, screen/sleep/hibernate timeouts.
+2. Power plans: advanced power settings and `powercfg`.
+3. Power Requests: apps and drivers can temporarily request that the system stay awake.
+
+In Windows 11, start with **Settings** -> **System** -> **Power & battery**. Microsoft documents power mode, energy saver, and screen/sleep/hibernate timeouts as the main controls.
+
+Useful commands:
+
+```powershell
+# Show apps and drivers preventing sleep
+powercfg /requests
+
+# Show supported sleep states
+powercfg /a
+
+# Show what last woke the PC
+powercfg /lastwake
+
+# Generate an energy report
+powercfg /energy
+
+# Generate a battery report
+powercfg /batteryreport
+```
+
+PowerToys Awake temporarily keeps Windows awake without permanently changing the power plan. It is best for short sessions while you are present. For locked-screen unattended work, configure the power plan directly.
+
+## macOS vs Windows
+
+| Area | macOS | Windows |
+| --- | --- | --- |
+| Temporary keep-awake | `caffeinate` | PowerToys Awake or app power requests |
+| Sleep diagnostics | `pmset -g assertions` | `powercfg /requests` |
+| Main UI settings | Battery/Energy Saver, Lock Screen | Power & battery, screen/sleep/hibernate timeouts |
+| Locked-screen work | Depends on assertions and system policy | User tools may not apply; power plan is more reliable |
+| Lid behavior | MacBook lid close is stricter than lock screen | Lid action is configurable in power plans |
+
+## Recommended strategies
+
+### Developer workstation
+
+- Prevent system sleep while plugged in.
+- Let the display turn off after 5 to 15 minutes.
+- Use Lidless or `caffeinate` for task-level keep-awake.
+- Keep logs, commits, or patches so long work is recoverable.
+
+### Home server or Mac mini
+
+- Disable automatic system sleep.
+- Allow display sleep.
+- Enable only the remote access or network wake features you need.
+- Monitor temperature, disk health, and logs.
+
+### Laptop on battery
+
+- Avoid disabling sleep for long periods.
+- Use time-limited keep-awake only for clear tasks.
+- Let low battery restore normal power-saving behavior.
+
+### AI coding agents
+
+- Keep the system awake.
+- Restrict the agent's working directory and permissions.
+- Preserve a recovery path with `resume`, `continue`, logs, or a task state file.
+- Do not use a lit display as a substitute for proper system keep-awake.
+
+## Troubleshooting path
+
+1. Decide whether only the display turned off, or the whole system slept.
+2. Check active power requests or assertions.
+3. Compare plugged-in and battery policies.
+4. Check lock screen, lid close, remote desktop, VPN, and external drive behavior.
+5. Keep only the necessary task awake, then return to normal power policy.
+
+## References
+
+- [Apple: Set sleep and wake settings for your Mac](https://support.apple.com/en-ie/guide/mac-help/mchle41a6ccd/mac)
+- [caffeinate macOS man page](https://keith.github.io/xcode-man-pages/caffeinate.8.html)
+- [Microsoft: Power settings in Windows 11](https://support.microsoft.com/en-us/windows/power-settings-in-windows-11-0d6a2b6b-2e87-4611-9980-ac9ea2175734)
+- [Microsoft Learn: PowerToys Awake](https://learn.microsoft.com/en-us/windows/powertoys/awake)
+- [Microsoft Learn: powercfg command-line options](https://learn.microsoft.com/en-us/windows-hardware/design/device-experiences/powercfg-command-line-options)
+

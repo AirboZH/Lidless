@@ -2,14 +2,13 @@ import type { Locale } from "@/i18n/routing";
 import type { UseCase } from "./types";
 
 /**
- * Fallback data for the use cases. Used when Sanity is not configured (or a
- * query fails). Once a CMS is connected, these also serve as a reference for
- * what the content should look like.
+ * The use-case content shown in the landing page's "Use cases" section.
+ * This is the single source of truth — edit the copy here directly.
  */
-export const demoUseCases: Record<Locale, UseCase[]> = {
+export const useCases: Record<Locale, UseCase[]> = {
   en: [
     {
-      id: "demo-claude-code",
+      id: "claude-code",
       tag: "Claude Code",
       title: "Walk away while Claude Code keeps coding",
       description:
@@ -17,7 +16,7 @@ export const demoUseCases: Record<Locale, UseCase[]> = {
       icon: "terminal",
     },
     {
-      id: "demo-remote",
+      id: "remote",
       tag: "Remote access",
       title: "Reconnect from anywhere",
       description:
@@ -25,7 +24,7 @@ export const demoUseCases: Record<Locale, UseCase[]> = {
       icon: "remote",
     },
     {
-      id: "demo-builds",
+      id: "builds",
       tag: "Long builds & CI",
       title: "Don't babysit the build",
       description:
@@ -33,7 +32,7 @@ export const demoUseCases: Record<Locale, UseCase[]> = {
       icon: "build",
     },
     {
-      id: "demo-downloads",
+      id: "downloads",
       tag: "Big transfers",
       title: "Let large downloads finish",
       description:
@@ -41,7 +40,7 @@ export const demoUseCases: Record<Locale, UseCase[]> = {
       icon: "download",
     },
     {
-      id: "demo-media",
+      id: "media",
       tag: "Render & encode",
       title: "Overnight renders and exports",
       description:
@@ -49,7 +48,7 @@ export const demoUseCases: Record<Locale, UseCase[]> = {
       icon: "media",
     },
     {
-      id: "demo-online",
+      id: "online",
       tag: "Always reachable",
       title: "Stay present for your team",
       description:
@@ -59,7 +58,7 @@ export const demoUseCases: Record<Locale, UseCase[]> = {
   ],
   zh: [
     {
-      id: "demo-claude-code",
+      id: "claude-code",
       tag: "Claude Code",
       title: "人走开，Claude Code 继续写代码",
       description:
@@ -67,7 +66,7 @@ export const demoUseCases: Record<Locale, UseCase[]> = {
       icon: "terminal",
     },
     {
-      id: "demo-remote",
+      id: "remote",
       tag: "远程回连",
       title: "随时从别处连回来",
       description:
@@ -75,7 +74,7 @@ export const demoUseCases: Record<Locale, UseCase[]> = {
       icon: "remote",
     },
     {
-      id: "demo-builds",
+      id: "builds",
       tag: "长编译 / CI",
       title: "不用守着编译进度条",
       description:
@@ -83,7 +82,7 @@ export const demoUseCases: Record<Locale, UseCase[]> = {
       icon: "build",
     },
     {
-      id: "demo-downloads",
+      id: "downloads",
       tag: "大文件传输",
       title: "让大下载安心跑完",
       description:
@@ -91,7 +90,7 @@ export const demoUseCases: Record<Locale, UseCase[]> = {
       icon: "download",
     },
     {
-      id: "demo-media",
+      id: "media",
       tag: "渲染 / 转码",
       title: "整夜渲染与导出",
       description:
@@ -99,7 +98,7 @@ export const demoUseCases: Record<Locale, UseCase[]> = {
       icon: "media",
     },
     {
-      id: "demo-online",
+      id: "online",
       tag: "始终在线",
       title: "为团队保持在场",
       description:

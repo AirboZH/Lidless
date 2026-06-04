@@ -22,6 +22,7 @@
     "useCases": "Use cases",
     "how": "How it works",
     "faq": "FAQ",
+    "docs": "Docs",
     "feedback": "Feedback",
     "github": "GitHub",
     "download": "Download",
@@ -29,12 +30,13 @@
     "skipToContent": "Skip to content"
   },
   "Hero": {
-    "badge": "macOS menu bar app",
-    "titleLine1": "Your Mac looks asleep.",
-    "titleLine2": "The work keeps running.",
-    "subtitle": "Lidless keeps your Mac awake while the screen is locked. The display can switch off to save power — the system, your downloads and your remote sessions stay alive. One switch, that's it.",
+    "badge": "macOS & Windows menu bar app",
+    "titleLine1": "Lidless",
+    "titleLine2": "Keep your Mac awake while the screen sleeps",
+    "subtitle": "Your Mac looks asleep — but downloads, builds and remote sessions keep running behind a locked, dark screen. The display sleeps to save power; the system stays awake. One switch, that's it.",
     "download": "Download for macOS",
-    "downloadMeta": "Free · macOS {min}+ · v{version}",
+    "downloadWindows": "Download for Windows",
+    "downloadMeta": "Free · macOS {min}+ / Windows 10+ · v{version}",
     "github": "View on GitHub",
     "trust": "No account. No daemon. No dock icon."
   },
@@ -120,6 +122,10 @@
         "a": "Same core idea — keep the Mac awake — but Lidless is deliberately minimal: one switch, a plugged-in-only option, and a tray panel that disappears when you don't need it. It's also cross-platform and fully open source."
       },
       {
+        "q": "How is it different from the caffeinate command?",
+        "a": "caffeinate -i is the built-in macOS terminal command that holds the same kind of power assertion — but it stops the moment you close the terminal window, and there's no UI or plugged-in-only option. Lidless is a persistent menu bar GUI for that exact mechanism: flip it once and it keeps holding in the background. You can confirm it's working any time with pmset -g assertions."
+      },
+      {
         "q": "Will it keep my Mac online for remote access?",
         "a": "Yes. Because the system never goes to sleep, network stays up, so SSH, RustDesk, VNC and Screen Sharing remain reachable while the Mac is locked."
       },
@@ -133,14 +139,28 @@
       },
       {
         "q": "Is there a Windows version?",
-        "a": "Yes. The same one-switch app runs on Windows, with an extra hint for Modern Standby machines whose Wi-Fi adapter would otherwise sleep."
+        "a": "Yes — use the Download for Windows button above (or grab the .msi from the GitHub releases page). The same one-switch app runs on Windows, with an extra hint for Modern Standby machines whose Wi-Fi adapter would otherwise sleep."
       }
     ]
   },
   "CtaBand": {
     "title": "Keep the work awake. Walk away.",
     "subtitle": "Free, open source, and out of your way.",
-    "download": "Download for macOS"
+    "download": "Download for macOS",
+    "downloadWindows": "Download for Windows"
+  },
+  "Docs": {
+    "title": "Documentation",
+    "description": "Guides, tutorials and reference for Lidless.",
+    "onThisPage": "On this page",
+    "menu": "Documentation menu",
+    "previous": "Previous",
+    "next": "Next",
+    "updated": "Updated {date}",
+    "tutorial": "Tutorial",
+    "reference": "Reference",
+    "copy": "Copy",
+    "copied": "Copied"
   },
   "Footer": {
     "tagline": "Stay awake when locked · stay online. The machine looks asleep; the unlidded eye stays open.",
@@ -150,6 +170,7 @@
     "useCases": "Use cases",
     "how": "How it works",
     "faq": "FAQ",
+    "docs": "Documentation",
     "download": "Download",
     "github": "GitHub",
     "rights": "© {year} Lidless. Open source under the MIT License.",

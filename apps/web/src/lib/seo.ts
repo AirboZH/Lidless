@@ -53,7 +53,28 @@ export function softwareApplicationJsonLd(opts: {
       price: "0",
       priceCurrency: "USD",
     },
-    operatingSystemVersion: `macOS ${siteConfig.minMacOS}+`,
+    // System requirements (operatingSystemVersion is not a valid Schema.org property)
+    softwareRequirements: `macOS ${siteConfig.minMacOS} or later, Windows 10 or later`,
+    // Disambiguate the "Lidless" software entity by linking it to its canonical repo
+    sameAs: [siteConfig.githubUrl],
+    creator: { "@type": "Organization", name: siteConfig.name, url: siteUrl },
+  };
+}
+
+/**
+ * Organization entity — anchors the publisher identity (used as author/publisher
+ * elsewhere) and links out via sameAs so search + AI engines can disambiguate the brand.
+ */
+export function organizationJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": `${siteUrl}/#organization`,
+    name: siteConfig.name,
+    url: siteUrl,
+    logo: `${siteUrl}/apple-icon.png`,
+    email: siteConfig.email,
+    sameAs: [siteConfig.githubUrl],
   };
 }
 
@@ -81,5 +102,45 @@ export function websiteJsonLd(opts: { name: string; description: string }) {
     name: opts.name,
     url: siteUrl,
     description: opts.description,
+  };
+}
+
+/** TechArticle structured data for a docs page — helps it qualify as an article in search */
+export function techArticleJsonLd(opts: {
+  title: string;
+  description?: string;
+  /** Absolute URL of the article. */
+  url: string;
+  locale: Locale;
+  /** ISO date (frontmatter `updated`). */
+  dateModified?: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    headline: opts.title,
+    ...(opts.description ? { description: opts.description } : {}),
+    inLanguage: opts.locale,
+    url: opts.url,
+    mainEntityOfPage: opts.url,
+    ...(opts.dateModified
+      ? { dateModified: opts.dateModified, datePublished: opts.dateModified }
+      : {}),
+    author: { "@type": "Organization", name: siteConfig.name, url: siteUrl },
+    publisher: { "@type": "Organization", name: siteConfig.name, url: siteUrl },
+  };
+}
+
+/** BreadcrumbList structured data — a shot at the breadcrumb rich result in search */
+export function breadcrumbJsonLd(items: { name: string; url: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: item.url,
+    })),
   };
 }

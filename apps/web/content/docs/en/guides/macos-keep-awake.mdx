@@ -1,0 +1,110 @@
+---
+title: "How to Keep a Mac Awake"
+description: "A practical guide to keeping macOS awake for downloads, builds, backups, remote sessions, and coding agents without forcing the screen to stay on."
+template: tutorial
+group: "Guides"
+order: 20
+updated: 2026-06-04
+---
+
+Keeping a Mac awake is not the same as keeping the display on. For long-running work, the useful goal is usually this: let the screen turn off, but keep the system, network, and processes running.
+
+<Callout type="note" title="Quick answer">
+Use `caffeinate` for one-off terminal jobs, Lidless for locked-screen background work, and macOS settings for machines that stay plugged in most of the time.
+</Callout>
+
+## The three common ways
+
+| Situation | Best option | Why |
+| --- | --- | --- |
+| One command needs to finish | `caffeinate` | Built into macOS and temporary |
+| You lock the screen and walk away | Lidless | Keeps the system awake while the display can sleep |
+| A desktop Mac or always-plugged workstation | macOS settings | Simple, persistent policy |
+
+## Method 1: Change macOS power settings
+
+This is a good fit for a Mac mini, iMac, or MacBook that usually stays plugged in on a desk.
+
+<Steps>
+<Step title="Open power settings">
+Open **System Settings**. On a MacBook, go to **Battery**. On a desktop Mac, use **Energy Saver**.
+</Step>
+<Step title="Open Options">
+On MacBook models, click **Options**. The exact wording can vary by macOS version and hardware.
+</Step>
+<Step title="Prevent sleep on power adapter">
+Enable **Prevent automatic sleeping on power adapter when the display is off**. On desktop Macs, the wording is usually **Prevent automatic sleeping when the display is off**.
+</Step>
+<Step title="Let the display sleep">
+In **Lock Screen**, keep a reasonable display timeout such as 5 or 10 minutes. The display can sleep while the Mac keeps working.
+</Step>
+</Steps>
+
+Apple also notes that preventing sleep uses more power, so this setup is best for plugged-in use.
+
+## Method 2: Use `caffeinate` for a temporary job
+
+`caffeinate` is built into macOS. It creates a temporary power assertion and releases it when the command ends.
+
+```bash
+# Keep the system awake until you press Ctrl-C
+caffeinate
+```
+
+```bash
+# Keep awake for two hours
+caffeinate -t 7200
+```
+
+```bash
+# Keep the Mac awake while a build runs
+caffeinate -i npm run build
+```
+
+The `-i` flag prevents idle system sleep, but does not force the display to stay on. For every flag and pattern, see [What Is the Mac caffeinate Command?](/docs/guides/mac-caffeinate-command).
+
+## Method 3: Use Lidless for locked-screen work
+
+If your real workflow is "start a task, lock the screen, come back later," Lidless is the more convenient option. It holds a system keep-awake assertion in the background, while the display can still turn off normally.
+
+<Steps>
+<Step title="Install and open Lidless">
+Follow the [getting started guide](/docs/getting-started).
+</Step>
+<Step title="Turn on Keep awake">
+Open the menu bar panel and enable **Keep awake**. On a laptop, also consider **Only when plugged in**.
+</Step>
+<Step title="Start your long task">
+Run your build, backup, download, video encode, Codex thread, or Claude Code session.
+</Step>
+<Step title="Lock the screen">
+The screen can go dark, but the Mac keeps running.
+</Step>
+</Steps>
+
+## How to check whether it is working
+
+Run:
+
+```bash
+pmset -g assertions
+```
+
+When Lidless or `caffeinate` is active, you should see a sleep-prevention assertion such as `PreventUserIdleSystemSleep`.
+
+## Common mistakes
+
+**Keeping the display on instead of the system awake.**  
+Long tasks usually do not need a lit display. Let the screen sleep and keep the system awake.
+
+**Closing a MacBook lid and expecting the same behavior.**  
+Lid-closed behavior is stricter and depends on power, displays, input devices, and macOS policy. For unattended work, lock the screen instead of closing the lid.
+
+**Setting everything to Never.**  
+That works, but it can waste battery. Prefer task-level or plugged-in-only keep-awake rules.
+
+## References
+
+- [Apple: Set sleep and wake settings for your Mac](https://support.apple.com/en-ie/guide/mac-help/mchle41a6ccd/mac)
+- [caffeinate macOS man page](https://keith.github.io/xcode-man-pages/caffeinate.8.html)
+

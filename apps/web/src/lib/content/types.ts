@@ -7,9 +7,9 @@ export type UseCaseIconKey =
   | "media"
   | "moon";
 
-/** A use case (one entry in the landing page's "Use cases" section); the CMS and demo data share this same shape */
+/** A use case (one entry in the landing page's "Use cases" section) */
 export interface UseCase {
-  /** Stable id (Sanity uses _id; demo uses a hand-written slug) */
+  /** Stable id (a hand-written slug) */
   id: string;
   /** The small label shown above, e.g. "Claude Code" */
   tag: string;

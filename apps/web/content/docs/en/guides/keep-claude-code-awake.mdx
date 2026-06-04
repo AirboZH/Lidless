@@ -1,0 +1,73 @@
+---
+title: "Keep Claude Code running overnight"
+description: "Start a long agentic run, lock your machine, and let it finish."
+template: tutorial
+group: "Guides"
+order: 10
+updated: 2026-06-04
+---
+
+A long agentic coding run can take hours. Without Lidless, locking your machine
+(or letting it idle) suspends the system and stalls the task. Here's the setup.
+
+<Callout type="note" title="Before you start">
+You'll need Lidless installed — see [Getting started](/docs/getting-started) — and
+a task you want to keep running, such as a Claude Code session.
+</Callout>
+
+## Steps
+
+<Steps>
+<Step title="Turn on Keep awake">
+Open the menu-bar panel and enable **Keep awake**. The status should read
+*Active · system won't sleep*.
+</Step>
+<Step title="Keep power connected">
+On a laptop, plug in. With **Only when plugged in** enabled, unplugging pauses
+keep-awake and your task could stall.
+</Step>
+<Step title="Start your run, then lock the screen">
+Kick off the task, then lock the screen — the display sleeps while the system
+keeps working.
+</Step>
+<Step title="Come back to a finished job">
+Unlock later and your run has progressed the whole time — no paused task, no
+dropped SSH session.
+</Step>
+</Steps>
+
+## Lock the screen from the terminal
+
+<Tabs>
+<Tab label="macOS">
+
+```bash
+# Sleep the display now; the system stays awake thanks to Lidless
+pmset displaysleepnow
+```
+
+</Tab>
+<Tab label="Windows">
+
+```powershell
+# Lock the workstation
+rundll32.exe user32.dll,LockWorkStation
+```
+
+</Tab>
+</Tabs>
+
+## Verify it's working
+
+On macOS, check that the keep-awake assertion is held:
+
+```bash
+pmset -g assertions
+```
+
+You should see `PreventUserIdleSystemSleep` in the list while Keep awake is on.
+
+<Callout type="warning" title="Battery drain">
+Keeping the system awake uses more power than sleeping. On battery, prefer
+**Only when plugged in** so Lidless backs off automatically.
+</Callout>

@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { AppleIcon } from "@/components/icons";
+import { AppleIcon, WindowsIcon } from "@/components/icons";
 import { siteConfig } from "@/config/site";
 
 export async function CtaBand() {
@@ -19,13 +19,22 @@ export async function CtaBand() {
           <p className="mx-auto mt-4 max-w-md text-pretty text-muted">
             {t("subtitle")}
           </p>
-          <a
-            href={siteConfig.downloadUrl}
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3.5 text-base font-medium text-white shadow-glow transition hover:bg-accent-bright"
-          >
-            <AppleIcon className="h-5 w-5" />
-            {t("download")}
-          </a>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <a
+              href={siteConfig.macDownloadUrl}
+              className="inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3.5 text-base font-medium text-white shadow-glow transition hover:bg-accent-bright"
+            >
+              <AppleIcon className="h-5 w-5" />
+              {t("download")}
+            </a>
+            <a
+              href={siteConfig.windowsDownloadUrl}
+              className="inline-flex items-center gap-2 rounded-full border border-hairline px-7 py-3.5 text-base font-medium text-ink transition hover:border-accent/50"
+            >
+              <WindowsIcon className="h-5 w-5" />
+              {t("downloadWindows")}
+            </a>
+          </div>
         </div>
       </div>
     </section>

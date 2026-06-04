@@ -1,0 +1,37 @@
+---
+title: "Settings reference"
+description: "Every Lidless switch and what it does."
+template: reference
+group: "Reference"
+order: 20
+updated: 2026-06-04
+---
+
+## Switches
+
+| Setting | Default | What it does |
+| --- | --- | --- |
+| **Keep awake** | Off | Holds a system power assertion so the machine won't idle-sleep. The display still sleeps normally. |
+| **Only when plugged in** | Off | Pauses keep-awake on battery; resumes automatically when power is connected. |
+
+## Platform notes
+
+<Tabs>
+<Tab label="macOS">
+
+Uses an IOKit `PreventUserIdleSystemSleep` assertion — the same mechanism the OS
+uses internally. Verify with `pmset -g assertions`.
+
+</Tab>
+<Tab label="Windows">
+
+Uses `SetThreadExecutionState`. On Modern Standby machines, Lidless hints when the
+wireless adapter would otherwise sleep.
+
+</Tab>
+</Tabs>
+
+## Window behavior
+
+Closing the window minimizes Lidless to the tray; it keeps running in the
+background. There is no dock icon.

@@ -1,0 +1,110 @@
+---
+title: "macOS 如何让电脑保持唤醒"
+description: "从系统设置、caffeinate 命令到 Lidless，完整理解 Mac 如何保持唤醒、熄屏运行和排查睡眠问题。"
+template: tutorial
+group: "指南"
+order: 20
+updated: 2026-06-04
+---
+
+想让 Mac 在你离开时继续编译、下载、跑脚本、同步文件或执行 AI 编码任务，核心不是“屏幕一直亮”，而是让系统不要进入空闲睡眠。屏幕可以熄灭，CPU、网络和进程仍继续工作，这通常才是更健康的方案。
+
+<Callout type="note" title="先看结论">
+临时任务用 `caffeinate`，日常锁屏后继续跑任务用 Lidless，长期固定策略再改系统设置。不要为了保活把屏幕常亮当成默认方案。
+</Callout>
+
+## 三种常见做法
+
+| 场景 | 推荐方式 | 适合谁 |
+| --- | --- | --- |
+| 临时跑一个命令 | `caffeinate` | 开发者、终端用户 |
+| 锁屏后继续跑 Codex、Claude Code、下载、构建 | Lidless | 希望少记命令的人 |
+| 台式机或固定工作站长期不睡眠 | 系统设置 | 设备长期插电、位置安全 |
+
+## 方法一：用系统设置阻止插电睡眠
+
+macOS 的图形设置适合长期插电使用的机器，比如 Mac mini、iMac，或一直放在桌面的 MacBook。
+
+<Steps>
+<Step title="打开电池或节能设置">
+进入 **系统设置**。MacBook 打开 **电池**，台式 Mac 打开 **节能**。
+</Step>
+<Step title="进入选项">
+MacBook 点击 **选项**。不同 macOS 版本和机型的入口名称可能略有不同。
+</Step>
+<Step title="开启插电防睡眠">
+打开 **当显示器关闭时，防止使用电源适配器时自动睡眠**。台式 Mac 上的文案通常是 **当显示器关闭时，防止自动睡眠**。
+</Step>
+<Step title="让屏幕仍然可以熄灭">
+在 **锁定屏幕** 里把显示器关闭时间设得合理，例如 5 分钟或 10 分钟。这样屏幕会关，系统仍保持运行。
+</Step>
+</Steps>
+
+Apple 的 Mac 使用手册也提醒：延迟或阻止睡眠会增加耗电，所以这类设置更适合插电场景。
+
+## 方法二：用 `caffeinate` 临时保持唤醒
+
+如果你只想让一个命令跑完，不想永久改设置，`caffeinate` 是 macOS 自带的轻量方案。
+
+```bash
+# 防止系统进入空闲睡眠，直到你按 Ctrl-C
+caffeinate
+```
+
+```bash
+# 保持唤醒 2 小时，单位是秒
+caffeinate -t 7200
+```
+
+```bash
+# 让 npm build 跑完之前都不要睡眠
+caffeinate -i npm run build
+```
+
+这里的关键是 `-i`：它阻止系统因为无人操作而进入空闲睡眠，但不会强行让屏幕一直亮。想深入理解每个参数，可以看 [mac caffeinate command 是什么，怎么用](/docs/guides/mac-caffeinate-command)。
+
+## 方法三：用 Lidless 锁屏后继续运行
+
+如果你的真实需求是“我锁屏离开，但电脑继续跑任务”，Lidless 更直接。它在后台持有系统保活断言，屏幕照常熄灭，任务继续运行。
+
+<Steps>
+<Step title="安装并打开 Lidless">
+按 [快速上手](/docs/getting-started) 完成安装。
+</Step>
+<Step title="开启保持唤醒">
+在菜单栏面板打开 **保持唤醒**。如果是 MacBook，建议同时开启 **仅在插电时生效**。
+</Step>
+<Step title="启动你的长任务">
+例如编译、备份、下载、视频转码、Codex 或 Claude Code。
+</Step>
+<Step title="锁屏离开">
+屏幕可以关闭，系统继续工作。回来后检查任务日志即可。
+</Step>
+</Steps>
+
+## 如何确认 Mac 真的没睡
+
+用下面的命令看当前有哪些程序在阻止睡眠：
+
+```bash
+pmset -g assertions
+```
+
+如果 Lidless 或 `caffeinate` 正在工作，你通常会看到类似 `PreventUserIdleSystemSleep` 的断言。也可以打开活动监视器，在 **能耗** 列里查看哪些应用正在影响睡眠。
+
+## 常见误区
+
+**误区一：屏幕亮着才叫保持唤醒。**  
+不是。对长任务来说，系统不睡眠才重要。屏幕常亮只会增加耗电和烧屏风险。
+
+**误区二：关上 MacBook 盖子还能照常跑。**  
+不一定。合盖会触发更强的睡眠策略，外接电源、外接显示器、输入设备和系统版本都会影响结果。更稳妥的做法是锁屏或熄屏，不要合盖。
+
+**误区三：把睡眠改成“永不”最省心。**  
+如果你经常用电池，这会明显增加耗电。更好的方式是按任务临时保活，或只在插电时保活。
+
+## 参考资料
+
+- [Apple：Set sleep and wake settings for your Mac](https://support.apple.com/en-ie/guide/mac-help/mchle41a6ccd/mac)
+- [caffeinate macOS man page](https://keith.github.io/xcode-man-pages/caffeinate.8.html)
+

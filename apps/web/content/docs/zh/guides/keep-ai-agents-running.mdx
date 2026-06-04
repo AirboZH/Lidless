@@ -1,0 +1,158 @@
+---
+title: "如何让 Codex、Claude Code、OpenClaw 一直在电脑上运行"
+description: "让 AI coding agent 长时间运行的系统设置、保活方案、安全边界和恢复策略，覆盖 macOS、Windows、Codex、Claude Code 与 OpenClaw。"
+template: tutorial
+group: "指南"
+order: 50
+updated: 2026-06-04
+---
+
+Codex、Claude Code、OpenClaw 这类 agentic 工具经常要跑很久：读代码、改文件、执行测试、等待构建、处理远程消息。真正让它们“跑一整晚”的关键，不是让窗口一直开着，而是同时处理四件事：电脑不睡眠、网络不断、权限不阻塞、任务可恢复。
+
+<Callout type="warning" title="不要把无人值守等同于无限授权">
+长时间运行 agent 时，保活只是第一层。更重要的是限定工作目录、保留日志、避免把危险命令配置成无提示执行。
+</Callout>
+
+## 先选运行模式
+
+| 工具 | 更适合一直跑的方式 | 关键点 |
+| --- | --- | --- |
+| Codex | 本地线程、`codex exec`、Codex Cloud | 本地任务需要电脑醒着；Cloud 任务不依赖本机睡眠 |
+| Claude Code | 交互式会话或 `claude -p` 非交互模式 | 用 `--continue`、`--resume` 保留恢复路径 |
+| OpenClaw | Gateway / daemon / service | 让 Gateway 作为服务运行，再保护宿主机不睡眠 |
+
+## 第一步：让系统不睡眠
+
+<Tabs>
+<Tab label="macOS">
+
+临时任务：
+
+```bash
+caffeinate -i codex "run the test suite and fix failures"
+caffeinate -i claude "review this repo"
+```
+
+如果任务已经在跑，用 PID 绑定：
+
+```bash
+pgrep -fl codex
+caffeinate -i -w <pid>
+```
+
+日常锁屏后继续跑任务，建议打开 Lidless 的 **保持唤醒**，并在笔记本上开启 **仅在插电时生效**。
+
+</Tab>
+<Tab label="Windows">
+
+先改系统电源策略：
+
+```powershell
+# 查看当前电源请求
+powercfg /requests
+```
+
+在 **设置** → **系统** → **电源和电池** → **屏幕、睡眠和休眠超时** 中，把插电时睡眠设为 **从不**。如果只是在桌面前临时保活，可以用 PowerToys Awake；如果要锁屏离开，优先使用电源计划而不是依赖 Awake。
+
+</Tab>
+</Tabs>
+
+## 第二步：避免任务停在权限提示上
+
+长任务最常见的失败不是电脑睡了，而是 agent 等你确认一个命令。
+
+Codex 的官方文档把权限拆成 sandbox 和 approval policy。保守做法是让它可以在当前工作区读写、需要越界时再请求确认：
+
+```bash
+codex --sandbox workspace-write --ask-for-approval on-request
+```
+
+需要脚本化执行时，用 `codex exec`：
+
+```bash
+codex exec --sandbox workspace-write "run tests and fix the smallest failing issue"
+```
+
+Claude Code 的 CLI 支持非交互模式：
+
+```bash
+claude -p "summarize failing tests and suggest a fix"
+```
+
+也支持继续最近会话或恢复指定会话：
+
+```bash
+claude --continue
+claude --resume <session-id> "continue the previous task"
+```
+
+<Callout type="warning" title="谨慎跳过权限">
+类似 `--dangerously-skip-permissions`、`danger-full-access` 这类配置只适合隔离环境、可信仓库和明确任务。不要为了“跑得久”牺牲最基本的边界。
+</Callout>
+
+## 第三步：给 agent 留下可恢复的任务状态
+
+长任务不应该只存在聊天上下文里。推荐在仓库里放一个轻量任务状态文件，例如：
+
+```text
+AGENT-TASK.md
+```
+
+内容包括：
+
+- 当前目标是什么。
+- 已经做过哪些决策。
+- 正在跑哪些测试或命令。
+- 哪些文件不要改。
+- 完成标准是什么。
+
+这样即使终端断开、会话压缩、网络中断，也能让 Codex、Claude Code 或 OpenClaw 的后续会话快速恢复上下文。
+
+## 第四步：让 OpenClaw 作为服务运行
+
+OpenClaw 的核心是 Gateway。官方文档描述它是一个自托管网关，把消息渠道和 AI agent 连接起来。适合长期运行的配置不是手动开一个终端窗口，而是安装 daemon/service：
+
+```bash
+npm install -g openclaw@latest
+openclaw onboard --install-daemon
+openclaw dashboard
+```
+
+之后再确认：
+
+```bash
+openclaw status
+openclaw logs
+```
+
+如果你的 OpenClaw 部署在 Mac mini、Windows 主机或家用服务器上，还要把宿主机的睡眠策略设好。Gateway 作为服务运行，不代表操作系统不会睡眠。
+
+## 推荐的无人值守清单
+
+- 插电运行，避免电池耗尽。
+- 屏幕可以关闭，但系统不要睡眠。
+- 锁屏离开，不要关闭安全锁。
+- 长任务写入日志或最终报告。
+- 把工作限制在 Git 仓库或指定目录里。
+- 运行前确认远程 API key、MCP、Git 凭证不会在日志里泄露。
+- 定期提交或生成 patch，避免跑很久但没有可恢复成果。
+
+## 出问题时怎么恢复
+
+| 现象 | 检查 |
+| --- | --- |
+| 电脑睡了 | macOS 用 `pmset -g assertions`；Windows 用 `powercfg /requests` |
+| agent 停住不动 | 看是否卡在权限确认、测试输入、网络重试 |
+| 任务被杀 | 查终端历史、日志、OpenClaw service logs |
+| 上下文丢了 | 用 `codex resume`、`codex exec resume`、`claude --continue`、`claude --resume` |
+| 网络断了 | 确认 Wi-Fi、电源节能、VPN 和代理 |
+
+## 参考资料
+
+- [OpenAI Codex CLI](https://developers.openai.com/codex/cli)
+- [OpenAI Codex non-interactive mode](https://developers.openai.com/codex/noninteractive)
+- [OpenAI Codex agent approvals and security](https://developers.openai.com/codex/agent-approvals-security)
+- [Claude Code CLI reference](https://docs.claude.com/en/docs/claude-code/cli-reference)
+- [OpenClaw docs](https://docs.openclaw.ai/)
+- [OpenClaw agents reference](https://docs.openclaw.ai/cli/agents)
+

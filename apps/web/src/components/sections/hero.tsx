@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { AppWindow } from "@/components/app-window";
-import { AppleIcon, GithubIcon } from "@/components/icons";
+import { AppleIcon, GithubIcon, WindowsIcon } from "@/components/icons";
 import { siteConfig } from "@/config/site";
 
 export async function Hero() {
@@ -35,11 +35,18 @@ export async function Hero() {
 
           <div className="mt-9 flex flex-wrap items-center gap-3">
             <a
-              href={siteConfig.downloadUrl}
+              href={siteConfig.macDownloadUrl}
               className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-base font-medium text-white shadow-glow transition hover:bg-accent-bright"
             >
               <AppleIcon className="h-5 w-5" />
               {t("download")}
+            </a>
+            <a
+              href={siteConfig.windowsDownloadUrl}
+              className="inline-flex items-center gap-2 rounded-full border border-hairline px-6 py-3 text-base font-medium text-ink transition hover:border-accent/50"
+            >
+              <WindowsIcon className="h-5 w-5" />
+              {t("downloadWindows")}
             </a>
             <a
               href={siteConfig.githubUrl}

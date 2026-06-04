@@ -1,14 +1,14 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { UseCaseIcon } from "@/components/icons";
 import { SectionHeading } from "@/components/section-heading";
-import { getUseCases } from "@/lib/cms";
+import { getUseCases } from "@/lib/content";
 import type { Locale } from "@/i18n/routing";
 
 export async function UseCases() {
   const t = await getTranslations("UseCases");
   const locale = (await getLocale()) as Locale;
-  // Content comes from Sanity; falls back to local demo data when no CMS is configured
-  const useCases = await getUseCases(locale);
+  // Content lives in src/lib/content/use-cases.ts
+  const useCases = getUseCases(locale);
 
   return (
     <section id="use-cases" className="scroll-mt-24 px-5 py-20 lg:py-28">

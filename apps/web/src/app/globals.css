@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 /* ── Brand tokens (taken from the desktop app's dark night-sky palette) ──────────────── */
 @theme {
@@ -62,6 +63,214 @@ body {
 @utility shadow-glow {
   box-shadow: 0 0 0 1px rgba(108, 140, 255, 0.35),
     0 12px 40px -8px var(--accent-glow);
+}
+
+/* ── Docs prose (Tailwind Typography, tuned to the brand dark palette) ─────────── */
+.prose-docs {
+  --tw-prose-invert-body: var(--color-muted);
+  --tw-prose-invert-headings: var(--color-ink);
+  --tw-prose-invert-lead: var(--color-muted);
+  --tw-prose-invert-links: var(--color-accent);
+  --tw-prose-invert-bold: var(--color-ink);
+  --tw-prose-invert-counters: var(--color-muted);
+  --tw-prose-invert-bullets: var(--color-muted);
+  --tw-prose-invert-hr: var(--hairline);
+  --tw-prose-invert-quotes: var(--color-ink);
+  --tw-prose-invert-quote-borders: var(--color-accent);
+  --tw-prose-invert-code: var(--color-ink);
+  --tw-prose-invert-pre-bg: transparent;
+  --tw-prose-invert-th-borders: var(--hairline);
+  --tw-prose-invert-td-borders: var(--hairline);
+  max-width: 100%;
+}
+
+/* Heading anchor links injected by rehype-autolink-headings (behavior: "wrap") */
+.prose-docs :where(h1, h2, h3, h4) a.heading-anchor {
+  color: inherit;
+  text-decoration: none;
+  font-weight: inherit;
+}
+.prose-docs :where(h2, h3) {
+  scroll-margin-top: 6rem; /* clear the fixed nav when deep-linking to #anchor */
+}
+
+.article-prose {
+  font-size: 1.025rem;
+  line-height: 1.85;
+}
+.article-prose > p:first-of-type {
+  font-size: 1.12rem;
+  line-height: 1.85;
+  color: color-mix(in srgb, var(--color-ink) 84%, var(--color-muted));
+}
+.article-prose :where(p, li) {
+  color: color-mix(in srgb, var(--color-ink) 72%, var(--color-muted));
+}
+.article-prose :where(h2) {
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+  font-size: 1.55rem;
+  letter-spacing: 0;
+}
+.article-prose :where(h3) {
+  margin-top: 2rem;
+  color: var(--color-ink);
+  letter-spacing: 0;
+}
+.article-prose :where(a) {
+  text-underline-offset: 0.18em;
+}
+.article-prose :where(table) {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--hairline);
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+}
+.article-prose :where(table)::-webkit-scrollbar {
+  height: 0.7rem;
+}
+.article-prose :where(table)::-webkit-scrollbar-thumb {
+  background: rgba(139, 147, 184, 0.32);
+  border: 3px solid transparent;
+  border-radius: 9999px;
+  background-clip: content-box;
+}
+.article-prose :where(thead th) {
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--color-ink);
+}
+.article-prose :where(th, td) {
+  min-width: 8rem;
+}
+.article-prose :where(blockquote) {
+  border-left-color: var(--color-accent);
+  color: var(--color-ink);
+}
+
+/* Inline code — small chip; fenced code is handled by rehype-pretty-code below */
+.prose-docs :where(code):not(pre code) {
+  display: inline-block;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: 0.375rem;
+  padding: 0.12em 0.4em;
+  font-size: 0.85em;
+  font-weight: 500;
+  line-height: 1.45;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+  vertical-align: baseline;
+}
+.prose-docs :where(code):not(pre code)::before,
+.prose-docs :where(code):not(pre code)::after {
+  content: none; /* drop Typography's backtick quotes around inline code */
+}
+
+/* The <Pre> wrapper already styles the box; reset Typography's own pre padding */
+.prose-docs :where(pre) {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+}
+.prose-docs :where(pre code) {
+  display: block;
+  min-width: max-content;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+.prose-docs :where(pre code)::before,
+.prose-docs :where(pre code)::after {
+  content: none;
+}
+.prose-docs :where(pre)::-webkit-scrollbar {
+  height: 0.7rem;
+}
+.prose-docs :where(pre)::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+}
+.prose-docs :where(pre)::-webkit-scrollbar-thumb {
+  background: rgba(139, 147, 184, 0.32);
+  border: 3px solid transparent;
+  border-radius: 9999px;
+  background-clip: content-box;
+}
+.prose-docs :where(pre)::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 147, 184, 0.5);
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+/* rehype-pretty-code line/word treatments */
+.prose-docs [data-line] {
+  display: block;
+  padding: 0 0.2rem;
+}
+.prose-docs [data-highlighted-line] {
+  margin-inline: -0.75rem;
+  padding-inline: 0.95rem;
+  background: rgba(108, 140, 255, 0.11);
+  box-shadow: inset 2px 0 0 rgba(138, 163, 255, 0.85);
+}
+.prose-docs [data-highlighted-chars] {
+  background: rgba(108, 140, 255, 0.22);
+  border-radius: 0.25rem;
+  padding: 0.05rem 0.18rem;
+}
+.prose-docs figure[data-rehype-pretty-code-figure] [data-rehype-pretty-code-title] {
+  margin-bottom: -0.75rem;
+  padding-left: 0.15rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--color-ink) 68%, var(--color-muted));
+}
+
+/* ── Numbered tutorial steps (<Steps>/<Step>) ─────────────────────────────────── */
+.doc-steps {
+  counter-reset: doc-step;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+.doc-step {
+  counter-increment: doc-step;
+  position: relative;
+  padding-left: 2.75rem;
+}
+.doc-step::before {
+  content: counter(doc-step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  height: 1.75rem;
+  width: 1.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid var(--hairline);
+  background: rgba(108, 140, 255, 0.1);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-accent-bright);
+}
+/* Connector line between step bullets */
+.doc-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: calc(0.875rem - 0.5px);
+  top: 2rem;
+  bottom: -1.5rem;
+  width: 1px;
+  background: var(--hairline);
 }
 
 /* Respect the "reduce motion" preference */

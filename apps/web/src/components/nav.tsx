@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { siteConfig } from "@/config/site";
-import { AppleIcon, GithubIcon, MoonMark } from "./icons";
+import { DownloadIcon, GithubIcon, MoonMark } from "./icons";
 import { LanguageSwitcher } from "./language-switcher";
 
 const sections = [
@@ -49,6 +49,11 @@ export function Nav() {
             </li>
           ))}
           <li>
+            <Link href="/docs" className="transition-colors hover:text-ink">
+              {t("docs")}
+            </Link>
+          </li>
+          <li>
             <a
               href={siteConfig.feedbackUrl}
               target="_blank"
@@ -77,7 +82,7 @@ export function Nav() {
             href={siteConfig.downloadUrl}
             className="hidden items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent-bright sm:inline-flex"
           >
-            <AppleIcon className="h-4 w-4" />
+            <DownloadIcon className="h-4 w-4" />
             {t("download")}
           </a>
 
@@ -123,6 +128,15 @@ export function Nav() {
               </li>
             ))}
             <li>
+              <Link
+                href="/docs"
+                onClick={() => setOpen(false)}
+                className="block rounded-lg px-3 py-2.5 text-muted transition hover:bg-surface hover:text-ink"
+              >
+                {t("docs")}
+              </Link>
+            </li>
+            <li>
               <a
                 href={siteConfig.feedbackUrl}
                 target="_blank"
@@ -141,7 +155,7 @@ export function Nav() {
               onClick={() => setOpen(false)}
               className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-accent px-4 py-2.5 text-sm font-medium text-white"
             >
-              <AppleIcon className="h-4 w-4" />
+              <DownloadIcon className="h-4 w-4" />
               {t("download")}
             </a>
           </div>

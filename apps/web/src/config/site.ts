@@ -15,6 +15,14 @@ export const downloadUrl =
   process.env.NEXT_PUBLIC_DOWNLOAD_URL ??
   "https://github.com/AirboZH/Lidless/releases/latest";
 
+// Platform-specific download links. Default to the releases page (which lists every
+// asset); point the env vars straight at the .dmg / .msi once those direct links exist.
+export const macDownloadUrl =
+  process.env.NEXT_PUBLIC_MAC_DOWNLOAD_URL ?? downloadUrl;
+
+export const windowsDownloadUrl =
+  process.env.NEXT_PUBLIC_WINDOWS_DOWNLOAD_URL ?? downloadUrl;
+
 // GitHub repository URL (secondary CTA / footer).
 export const githubUrl =
   process.env.NEXT_PUBLIC_GITHUB_URL ?? "https://github.com/AirboZH/Lidless";
@@ -27,6 +35,8 @@ export const siteConfig = {
   name: "Lidless",
   url: siteUrl,
   downloadUrl,
+  macDownloadUrl,
+  windowsDownloadUrl,
   githubUrl,
   feedbackUrl,
   // Current released version and system requirement (shown near the download button)

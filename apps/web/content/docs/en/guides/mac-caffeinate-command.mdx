@@ -1,0 +1,151 @@
+---
+title: "What Is the Mac caffeinate Command?"
+description: "A detailed tutorial for the macOS caffeinate command, including flags, examples, PID-based keep-awake, timers, and troubleshooting."
+template: tutorial
+group: "Guides"
+order: 40
+updated: 2026-06-04
+---
+
+People often search for the "Mac caffeine command," but the built-in macOS command is named `caffeinate`. It lives at `/usr/bin/caffeinate` and creates power management assertions that temporarily prevent specific kinds of sleep.
+
+<Callout type="note" title="In one sentence">
+Use `caffeinate` when you want a command, process, or time window to finish before macOS is allowed to sleep.
+</Callout>
+
+## Common commands
+
+```bash
+# Prevent idle system sleep until you press Ctrl-C
+caffeinate
+```
+
+```bash
+# Keep awake for one hour
+caffeinate -t 3600
+```
+
+```bash
+# Keep the Mac awake while a build runs
+caffeinate -i npm run build
+```
+
+```bash
+# Prevent display sleep and idle system sleep for 30 minutes
+caffeinate -di -t 1800
+```
+
+## Flags explained
+
+| Flag | Meaning | Use it when |
+| --- | --- | --- |
+| `-i` | Prevent idle system sleep | Builds, downloads, scripts |
+| `-d` | Prevent display sleep | Presentations or visible logs |
+| `-m` | Prevent disk idle sleep | Older drives or external disk jobs |
+| `-s` | Prevent system sleep while on AC power | Plugged-in long tasks |
+| `-u` | Declare user activity, possibly waking the display | You need to wake the screen briefly |
+| `-t` | Timeout in seconds | You only need keep-awake for a fixed time |
+| `-w` | Wait for a PID to exit | The target process is already running |
+
+The man page states that without flags, `caffeinate` prevents idle sleep. If you pass a command, `caffeinate` holds the assertion while that command runs.
+
+## Run it with a command
+
+This is the cleanest pattern:
+
+```bash
+caffeinate -i pnpm test
+```
+
+```bash
+caffeinate -i ./backup.sh
+```
+
+```bash
+caffeinate -i ffmpeg -i input.mov output.mp4
+```
+
+When the command exits, `caffeinate` exits too and macOS returns to its normal power policy.
+
+## Attach it to an existing process
+
+Find the process ID:
+
+```bash
+pgrep -fl node
+```
+
+Then bind `caffeinate` to that PID:
+
+```bash
+caffeinate -i -w 12345
+```
+
+When process `12345` exits, the keep-awake assertion ends.
+
+## Useful patterns
+
+<Tabs>
+<Tab label="Development">
+
+```bash
+caffeinate -i npm run build
+caffeinate -i pnpm test
+caffeinate -i cargo build --release
+```
+
+</Tab>
+<Tab label="Downloads and backups">
+
+```bash
+caffeinate -i curl -L -o archive.zip https://example.com/archive.zip
+caffeinate -i rsync -av ~/Projects/ /Volumes/Backup/Projects/
+```
+
+</Tab>
+<Tab label="Timed sessions">
+
+```bash
+# 2 hours
+caffeinate -t 7200
+
+# 8 hours
+caffeinate -t 28800
+```
+
+</Tab>
+</Tabs>
+
+## How to stop it
+
+If `caffeinate` is running in your terminal, press `Ctrl-C`. If it is running elsewhere:
+
+```bash
+pgrep -fl caffeinate
+kill <pid>
+```
+
+Avoid `killall caffeinate` as a reflex, because you may have more than one keep-awake session running.
+
+## `caffeinate` vs Lidless
+
+Use `caffeinate` for a specific terminal job:
+
+```bash
+caffeinate -i long-running-command
+```
+
+Use Lidless when your regular workflow is to lock the screen and let background tasks continue, such as Codex, Claude Code, downloads, backups, or remote sessions.
+
+## Troubleshooting
+
+- Make sure the terminal running `caffeinate` is still open.
+- If you used `-s`, confirm the Mac is connected to power.
+- Do not test by closing a MacBook lid; lid-closed behavior is not the same as idle sleep.
+- Run `pmset -g assertions` to verify that a sleep-prevention assertion exists.
+
+## References
+
+- [caffeinate macOS man page](https://keith.github.io/xcode-man-pages/caffeinate.8.html)
+- [Apple: Set sleep and wake settings for your Mac](https://support.apple.com/en-ie/guide/mac-help/mchle41a6ccd/mac)
+

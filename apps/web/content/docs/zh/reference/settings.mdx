@@ -1,0 +1,36 @@
+---
+title: "设置项参考"
+description: "Lidless 的每个开关，以及它们的作用。"
+template: reference
+group: "参考"
+order: 20
+updated: 2026-06-04
+---
+
+## 开关
+
+| 设置 | 默认 | 作用 |
+| --- | --- | --- |
+| **保持唤醒** | 关 | 持有一个系统电源断言，让机器不进入空闲睡眠。屏幕仍正常熄灭。 |
+| **仅在插电时生效** | 关 | 用电池时暂停保活；接通电源后自动恢复。 |
+
+## 平台说明
+
+<Tabs>
+<Tab label="macOS">
+
+使用 IOKit 的 `PreventUserIdleSystemSleep` 断言——和系统自己用的是同一套机制。
+可用 `pmset -g assertions` 核对。
+
+</Tab>
+<Tab label="Windows">
+
+使用 `SetThreadExecutionState`。在 Modern Standby 机型上，当无线网卡会休眠时，
+Lidless 会给出提示。
+
+</Tab>
+</Tabs>
+
+## 窗口行为
+
+关闭窗口会把 Lidless 最小化到托盘，它会在后台继续运行。没有 Dock 图标。

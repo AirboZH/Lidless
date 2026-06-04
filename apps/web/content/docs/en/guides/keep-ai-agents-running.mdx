@@ -1,0 +1,157 @@
+---
+title: "How to Keep Codex, Claude Code, and OpenClaw Running on Your Computer"
+description: "A practical guide to keeping coding agents and AI assistants running for hours by managing sleep, network, permissions, logs, and recovery."
+template: tutorial
+group: "Guides"
+order: 50
+updated: 2026-06-04
+---
+
+Agentic tools such as Codex, Claude Code, and OpenClaw often need time: reading a repository, editing files, running tests, waiting for builds, or processing messages. Keeping them running overnight is not just a power setting. You need four things: the computer must stay awake, the network must stay connected, permissions must not block progress, and the task must be recoverable.
+
+<Callout type="warning" title="Keep-awake is not unlimited trust">
+For unattended agent work, keep the machine awake but still limit the workspace, preserve logs, and avoid broad dangerous permissions unless you are in an isolated environment.
+</Callout>
+
+## Choose the right running mode
+
+| Tool | Good long-running mode | Key point |
+| --- | --- | --- |
+| Codex | Local threads, `codex exec`, or Codex Cloud | Local work depends on your computer staying awake; cloud work does not |
+| Claude Code | Interactive sessions or `claude -p` print mode | Use `--continue` or `--resume` for recovery |
+| OpenClaw | Gateway / daemon / service | Run the gateway as a service, then keep the host awake |
+
+## Step 1: Keep the system awake
+
+<Tabs>
+<Tab label="macOS">
+
+For one-off terminal tasks:
+
+```bash
+caffeinate -i codex "run the test suite and fix failures"
+caffeinate -i claude "review this repo"
+```
+
+For a process that is already running:
+
+```bash
+pgrep -fl codex
+caffeinate -i -w <pid>
+```
+
+For a daily locked-screen workflow, use Lidless and enable **Only when plugged in** on laptops.
+
+</Tab>
+<Tab label="Windows">
+
+Check current power requests:
+
+```powershell
+powercfg /requests
+```
+
+For locked-screen work, open **Settings** -> **System** -> **Power & battery** -> **Screen, sleep & hibernate timeouts**, then set plugged-in sleep to **Never**. PowerToys Awake is useful while you are at the machine, but it does not work on the lock screen.
+
+</Tab>
+</Tabs>
+
+## Step 2: Avoid permission stalls
+
+Long agent tasks often stop because the agent is waiting for approval, not because the computer slept.
+
+Codex separates sandboxing from approval policy. A balanced local mode is:
+
+```bash
+codex --sandbox workspace-write --ask-for-approval on-request
+```
+
+For scripted runs, use `codex exec`:
+
+```bash
+codex exec --sandbox workspace-write "run tests and fix the smallest failing issue"
+```
+
+Claude Code supports non-interactive print mode:
+
+```bash
+claude -p "summarize failing tests and suggest a fix"
+```
+
+It also supports continuing or resuming sessions:
+
+```bash
+claude --continue
+claude --resume <session-id> "continue the previous task"
+```
+
+<Callout type="warning" title="Be careful with bypass flags">
+Options such as `--dangerously-skip-permissions` or full-access sandbox modes are only appropriate in trusted, isolated environments. Do not trade basic boundaries for convenience.
+</Callout>
+
+## Step 3: Make the task recoverable
+
+Do not leave the whole plan inside chat history. Add a small task state file to the repository:
+
+```text
+AGENT-TASK.md
+```
+
+Include:
+
+- The current goal.
+- Decisions already made.
+- Commands or tests currently running.
+- Files the agent should not touch.
+- The definition of done.
+
+This makes it much easier to recover after a terminal disconnect, context compaction, network failure, or manual restart.
+
+## Step 4: Run OpenClaw as a service
+
+OpenClaw's core is its Gateway, which connects message channels to AI agents. For long-running use, prefer a daemon or service instead of a manually opened terminal:
+
+```bash
+npm install -g openclaw@latest
+openclaw onboard --install-daemon
+openclaw dashboard
+```
+
+Then check status and logs:
+
+```bash
+openclaw status
+openclaw logs
+```
+
+Running OpenClaw as a service does not automatically prevent the operating system from sleeping. Configure the host machine as well.
+
+## Unattended run checklist
+
+- Keep the machine plugged in.
+- Let the display turn off, but prevent system sleep.
+- Lock the screen before leaving.
+- Write logs or a final report.
+- Keep work limited to a Git repository or known directory.
+- Confirm API keys, MCP credentials, and Git credentials will not leak into logs.
+- Commit, checkpoint, or save patches regularly.
+
+## Recovery guide
+
+| Symptom | Check |
+| --- | --- |
+| The computer slept | macOS: `pmset -g assertions`; Windows: `powercfg /requests` |
+| The agent stopped | Look for approval prompts, test input, or network retries |
+| The task was killed | Check shell history, logs, and service logs |
+| Context was lost | Use `codex resume`, `codex exec resume`, `claude --continue`, or `claude --resume` |
+| Network dropped | Check Wi-Fi, power saving, VPN, and proxy settings |
+
+## References
+
+- [OpenAI Codex CLI](https://developers.openai.com/codex/cli)
+- [OpenAI Codex non-interactive mode](https://developers.openai.com/codex/noninteractive)
+- [OpenAI Codex agent approvals and security](https://developers.openai.com/codex/agent-approvals-security)
+- [Claude Code CLI reference](https://docs.claude.com/en/docs/claude-code/cli-reference)
+- [OpenClaw docs](https://docs.openclaw.ai/)
+- [OpenClaw agents reference](https://docs.openclaw.ai/cli/agents)
+

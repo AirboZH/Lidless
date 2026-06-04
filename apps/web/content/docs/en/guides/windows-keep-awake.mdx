@@ -1,0 +1,100 @@
+---
+title: "How to Keep a Windows PC Awake"
+description: "A practical Windows 11 and Windows 10 guide to keeping your PC awake with power settings, PowerToys Awake, and powercfg diagnostics."
+template: tutorial
+group: "Guides"
+order: 30
+updated: 2026-06-04
+---
+
+On Windows, "keep awake" can mean two different things: keep the display on, or keep the computer from sleeping. For downloads, builds, backups, and coding agents, you usually only need the second one.
+
+<Callout type="note" title="Quick answer">
+Use Windows power settings for unattended or locked-screen work. Use PowerToys Awake for short, temporary sessions while you are at the machine. Microsoft notes that PowerToys Awake does not work on the lock screen.
+</Callout>
+
+## Method 1: Change Windows sleep settings
+
+This is the most reliable option when you want work to continue after you lock the computer.
+
+<Steps>
+<Step title="Open power settings">
+Open **Settings** -> **System** -> **Power & battery**.
+</Step>
+<Step title="Open screen and sleep timeouts">
+Expand **Screen, sleep & hibernate timeouts**. The wording can vary slightly between Windows versions.
+</Step>
+<Step title="Change plugged-in sleep">
+Set **When plugged in, put my device to sleep after** to **Never**, or choose a long timeout.
+</Step>
+<Step title="Let the display turn off">
+Keep the screen timeout at something reasonable, such as 5 to 15 minutes. The display can turn off while the PC keeps working.
+</Step>
+</Steps>
+
+On a laptop, avoid setting battery sleep to Never unless you understand the battery drain.
+
+## Method 2: Use PowerToys Awake
+
+[PowerToys Awake](https://learn.microsoft.com/en-us/windows/powertoys/awake) temporarily overrides sleep behavior without permanently changing your power plan.
+
+It is useful for:
+
+- Presentations.
+- Large file copies or downloads.
+- Short scripts.
+- Temporary sessions where changing the system power plan feels too heavy.
+
+Awake can keep the PC awake indefinitely, for a duration, or until a specified time. By default, it does not necessarily keep the display on; use **Keep screen on** only when you really need the display to stay lit.
+
+<Callout type="warning" title="Lock screen limitation">
+PowerToys Awake does not work on the Windows lock screen. For tasks that must continue while the PC is locked, configure the Windows power plan directly or use a system-level keep-awake tool.
+</Callout>
+
+## Method 3: Diagnose sleep blockers with `powercfg`
+
+If a Windows PC will not sleep when it should, check which process or driver is requesting power:
+
+```powershell
+powercfg /requests
+```
+
+Check available sleep states:
+
+```powershell
+powercfg /a
+```
+
+See what woke the PC most recently:
+
+```powershell
+powercfg /lastwake
+```
+
+Generate an energy report:
+
+```powershell
+powercfg /energy
+```
+
+The report is useful when you are debugging battery drain or unexpected wake behavior.
+
+## Recommended settings
+
+| Goal | Plugged in | On battery |
+| --- | --- | --- |
+| Long downloads or builds | Sleep: Never; screen: 5-15 minutes | Sleep: 15-30 minutes |
+| Presentation | PowerToys Awake | Prefer plugged in |
+| Coding agents while locked | Sleep: Never; screen can turn off | Avoid unattended battery use |
+| Normal office work | Balanced defaults | Keep shorter sleep timeouts |
+
+## Security and power notes
+
+Keeping a computer awake increases power use, heat, and background network activity. Lock the machine before walking away. On managed work devices, check whether IT policy controls power settings.
+
+## References
+
+- [Microsoft: Power settings in Windows 11](https://support.microsoft.com/en-us/windows/power-settings-in-windows-11-0d6a2b6b-2e87-4611-9980-ac9ea2175734)
+- [Microsoft Learn: PowerToys Awake](https://learn.microsoft.com/en-us/windows/powertoys/awake)
+- [Microsoft Learn: powercfg command-line options](https://learn.microsoft.com/en-us/windows-hardware/design/device-experiences/powercfg-command-line-options)
+

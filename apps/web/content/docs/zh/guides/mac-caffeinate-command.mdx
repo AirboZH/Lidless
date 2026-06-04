@@ -1,0 +1,157 @@
+---
+title: "mac caffeinate command 是什么，怎么用"
+description: "详解 macOS caffeinate 命令的参数、使用场景、常见示例和排查方法，帮你临时阻止 Mac 进入睡眠。"
+template: tutorial
+group: "指南"
+order: 40
+updated: 2026-06-04
+---
+
+很多人会搜 “mac caffeine command”，实际 macOS 自带命令叫 `caffeinate`。它不是第三方 App，而是系统内置工具，路径通常是 `/usr/bin/caffeinate`。它的作用是创建电源管理断言，让 Mac 在一段时间内、一个命令运行期间，或某个进程结束前不要进入指定类型的睡眠。
+
+<Callout type="note" title="一句话理解">
+`caffeinate` 适合临时保活：让一个构建、下载、备份、转码或脚本跑完。它退出后，Mac 会回到原来的电源策略。
+</Callout>
+
+## 最常用命令
+
+```bash
+# 阻止系统进入空闲睡眠，直到按 Ctrl-C
+caffeinate
+```
+
+```bash
+# 保持唤醒 1 小时
+caffeinate -t 3600
+```
+
+```bash
+# npm run build 运行期间不睡眠
+caffeinate -i npm run build
+```
+
+```bash
+# 同时防止显示器睡眠和系统空闲睡眠，持续 30 分钟
+caffeinate -di -t 1800
+```
+
+## 参数详解
+
+| 参数 | 作用 | 什么时候用 |
+| --- | --- | --- |
+| `-i` | 防止系统进入空闲睡眠 | 最常用，适合编译、下载、脚本 |
+| `-d` | 防止显示器睡眠 | 演示、看日志、投屏 |
+| `-m` | 防止磁盘进入空闲睡眠 | 老式机械硬盘或外接盘任务 |
+| `-s` | 防止系统睡眠，仅插电时有效 | 插电长任务，需要更强保活 |
+| `-u` | 声明用户处于活跃状态，可能点亮屏幕 | 偶发需要唤醒显示器 |
+| `-t` | 指定秒数超时 | “只保活一段时间” |
+| `-w` | 等待某个 PID 退出 | 给已经运行的进程挂保活 |
+
+官方 man page 里也写明：不指定参数时，`caffeinate` 默认会阻止空闲睡眠；如果后面跟一个命令，它会在该命令运行期间持有断言。
+
+## 跟一个命令一起跑
+
+这是 `caffeinate` 最优雅的用法。比如你要跑测试：
+
+```bash
+caffeinate -i pnpm test
+```
+
+要跑一个很久的备份脚本：
+
+```bash
+caffeinate -i ./backup.sh
+```
+
+要让视频转码跑完：
+
+```bash
+caffeinate -i ffmpeg -i input.mov output.mp4
+```
+
+命令结束后，`caffeinate` 也会释放保活断言，不需要你手动恢复系统设置。
+
+## 给已经运行的进程保活
+
+如果任务已经开始了，可以先找 PID：
+
+```bash
+pgrep -fl node
+```
+
+然后用 `-w` 绑定：
+
+```bash
+caffeinate -i -w 12345
+```
+
+当 PID 为 `12345` 的进程退出，保活也会结束。这个方法适合已经跑起来的构建、下载器或 agent 进程。
+
+## 常见组合
+
+<Tabs>
+<Tab label="开发构建">
+
+```bash
+caffeinate -i npm run build
+caffeinate -i pnpm test
+caffeinate -i cargo build --release
+```
+
+</Tab>
+<Tab label="下载备份">
+
+```bash
+caffeinate -i curl -L -o archive.zip https://example.com/archive.zip
+caffeinate -i rsync -av ~/Projects/ /Volumes/Backup/Projects/
+```
+
+</Tab>
+<Tab label="定时保活">
+
+```bash
+# 2 小时
+caffeinate -t 7200
+
+# 8 小时
+caffeinate -t 28800
+```
+
+</Tab>
+</Tabs>
+
+## 如何停止
+
+如果你直接运行了 `caffeinate`，按 `Ctrl-C` 即可停止。也可以另开一个终端查找并结束：
+
+```bash
+pgrep -fl caffeinate
+kill <pid>
+```
+
+不要用 `killall caffeinate` 作为默认做法，因为你可能同时有多个保活任务，误杀会让其他任务失去保护。
+
+## 和 Lidless 怎么选
+
+`caffeinate` 适合“命令级”的一次性任务；Lidless 适合“人离开以后，电脑继续运行”的日常工作流。比如你经常锁屏后让 Codex、Claude Code、下载任务继续跑，用 Lidless 会少很多重复命令。
+
+如果你只是偶尔跑一次：
+
+```bash
+caffeinate -i long-running-command
+```
+
+如果你每天都要锁屏离开，让电脑继续干活：打开 Lidless 的 **保持唤醒**。
+
+## 排查：为什么用了还是睡
+
+- 确认终端窗口或运行 `caffeinate` 的进程没有退出。
+- 如果用了 `-s`，确认 Mac 正在接电源，因为该断言只在插电时有效。
+- 不要合盖测试。MacBook 合盖涉及硬件和系统策略，不等同于普通空闲睡眠。
+- 用 `pmset -g assertions` 查看当前断言是否存在。
+
+## 参考资料
+
+- [caffeinate macOS man page](https://keith.github.io/xcode-man-pages/caffeinate.8.html)
+- [Apple：Set sleep and wake settings for your Mac](https://support.apple.com/en-ie/guide/mac-help/mchle41a6ccd/mac)
+

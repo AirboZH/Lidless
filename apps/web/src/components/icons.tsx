@@ -1,5 +1,5 @@
 import type { ReactElement, SVGProps } from "react";
-import type { UseCaseIconKey } from "@/lib/cms";
+import type { UseCaseIconKey } from "@/lib/content";
 
 type IconProps = SVGProps<SVGSVGElement>;
 
@@ -42,6 +42,24 @@ export function AppleIcon(props: IconProps) {
   return (
     <svg {...base({ ...props, fill: "currentColor", stroke: "none" })}>
       <path d="M16.37 12.6c-.02-2.05 1.67-3.03 1.75-3.08-.95-1.4-2.44-1.59-2.97-1.61-1.26-.13-2.47.74-3.11.74-.64 0-1.63-.72-2.69-.7-1.38.02-2.66.8-3.37 2.04-1.44 2.5-.37 6.2 1.03 8.23.68.99 1.49 2.1 2.56 2.06 1.03-.04 1.42-.66 2.66-.66 1.24 0 1.59.66 2.68.64 1.11-.02 1.81-1 2.49-2 .78-1.15 1.1-2.26 1.12-2.32-.02-.01-2.15-.83-2.18-3.28ZM14.4 6.4c.56-.68.94-1.62.84-2.56-.81.03-1.79.54-2.37 1.22-.52.6-.97 1.56-.85 2.48.9.07 1.82-.46 2.38-1.14Z" />
+    </svg>
+  );
+}
+
+export function WindowsIcon(props: IconProps) {
+  return (
+    <svg {...base({ ...props, fill: "currentColor", stroke: "none" })}>
+      <path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" />
+    </svg>
+  );
+}
+
+/** Platform-neutral download glyph — for CTAs that lead to the releases page */
+export function DownloadIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M12 3v12M7 10l5 5 5-5" />
+      <path d="M4 21h16" />
     </svg>
   );
 }
