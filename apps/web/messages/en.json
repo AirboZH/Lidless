@@ -32,7 +32,7 @@
   "Hero": {
     "badge": "macOS & Windows menu bar app",
     "titleLine1": "Lidless",
-    "titleLine2": "Keep your Mac awake while the screen sleeps",
+    "titleLine2": "Keep the system awake. Let the display sleep.",
     "subtitle": "Your Mac looks asleep — but downloads, builds and remote sessions keep running behind a locked, dark screen. The display sleeps to save power; the system stays awake. One switch, that's it.",
     "download": "Download for macOS",
     "downloadWindows": "Download for Windows",

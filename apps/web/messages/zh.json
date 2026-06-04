@@ -31,7 +31,7 @@
   "Hero": {
     "badge": "macOS & Windows 菜单栏应用",
     "titleLine1": "Lidless",
-    "titleLine2": "锁屏时让 Mac 保持唤醒",
+    "titleLine2": "系统保持唤醒，屏幕尽管休眠。",
     "subtitle": "Mac 看起来睡着了，下载、编译和远程会话却还在锁屏的黑屏背后继续跑。屏幕熄灭省电，系统保持唤醒。一个开关，仅此而已。",
     "download": "下载 macOS 版",
     "downloadWindows": "下载 Windows 版",
