@@ -16,6 +16,18 @@ const nextConfig: NextConfig = {
   },
   // The monorepo root (two levels above apps/web). Prevents Next from mistaking a higher-up directory for the workspace root.
   outputFileTracingRoot: path.join(__dirname, "../../"),
+  // Next's sitemap.ts route emits `application/xml` without a charset. Declare
+  // utf-8 explicitly so the HTTP header agrees with the XML prolog's encoding.
+  async headers() {
+    return [
+      {
+        source: "/sitemap.xml",
+        headers: [
+          { key: "Content-Type", value: "application/xml; charset=utf-8" },
+        ],
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);
