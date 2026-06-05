@@ -162,6 +162,85 @@
     "copy": "Copy",
     "copied": "Copied"
   },
+  "CodexReset": {
+    "meta": {
+      "title": "Did Codex reset today? — {date}",
+      "description": "A live check on whether OpenAI's Codex usage limits have reset today. A big yes-or-no answer, when it last reset, and what to do while you wait. From the team behind Lidless.",
+      "keywords": [
+        "did codex reset today",
+        "codex rate limit reset",
+        "codex usage limit reset",
+        "codex limit reset time",
+        "when does codex reset",
+        "codex rate limit",
+        "openai codex limit",
+        "codex weekly limit reset",
+        "has codex reset yet"
+      ]
+    },
+    "verdict": {
+      "question": "Did Codex reset today?",
+      "yes": "Yes",
+      "no": "No",
+      "unknown": "Not sure yet",
+      "yesNote": "It looks like Codex limits reset today. Go burn through those tokens while they're fresh.",
+      "noNote": "No sign that Codex limits reset today. Sit tight — and maybe put the wait to good use below.",
+      "unknownNote": "We can't confirm a reset yet today. Check back in a little while.",
+      "monitorLive": "Monitor is live",
+      "monitorSoon": "Live tracking coming soon · checked manually for now",
+      "lastChecked": "Last checked {time}",
+      "refresh": "Refresh status",
+      "asOf": "As of {date}"
+    },
+    "explain": {
+      "title": "What this page tracks",
+      "body": "OpenAI's Codex enforces usage and rate limits that roll over on a schedule, and every so often the team bumps the ceilings. This page answers the one thing you actually want to know — did it reset today? — without digging through dashboards or X threads.",
+      "points": [
+        {
+          "title": "One clear answer",
+          "body": "A giant yes or no for today, plus the date and time we last checked, so you're never left guessing."
+        },
+        {
+          "title": "Reckoned in US Pacific",
+          "body": "“Today” rolls over at midnight US Pacific time, matching how Codex limits and OpenAI announcements tend to line up."
+        },
+        {
+          "title": "Live tracking next",
+          "body": "Soon this updates automatically from the signals that announce a reset. For now it's checked and set by hand."
+        }
+      ]
+    },
+    "faq": {
+      "title": "Codex rate limit FAQ",
+      "items": [
+        {
+          "q": "How often do Codex limits reset?",
+          "a": "Codex usage limits roll over on a fixed cadence (commonly a rolling weekly window per account), and OpenAI occasionally raises the ceilings on top of that. This page focuses on whether a reset or bump landed today."
+        },
+        {
+          "q": "What does “reset” mean here?",
+          "a": "It means your Codex usage allowance has rolled back over — your remaining quota refreshes — or OpenAI has publicly increased the limits. Either way, you can get back to work."
+        },
+        {
+          "q": "What timezone is “today”?",
+          "a": "We use US Pacific time (America/Los_Angeles). The answer flips back to “no” at midnight Pacific and stays there until the next reset is detected."
+        },
+        {
+          "q": "Is this an official OpenAI page?",
+          "a": "No. It's an independent, free status page built by the team behind Lidless. We're not affiliated with OpenAI."
+        },
+        {
+          "q": "Why does Lidless care about Codex limits?",
+          "a": "Lidless keeps your Mac awake and online so long agent runs, downloads and remote sessions finish even with the screen locked — exactly the kind of work that bumps into Codex limits in the first place."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Waiting on Codex? Don't let your Mac doze off.",
+      "subtitle": "Lidless keeps your Mac awake and online while long agent runs and downloads finish — even with the screen locked. Free and open source.",
+      "download": "Download for macOS"
+    }
+  },
   "Footer": {
     "tagline": "Stay awake when locked · stay online. The machine looks asleep; the unlidded eye stays open.",
     "productHeading": "Product",
