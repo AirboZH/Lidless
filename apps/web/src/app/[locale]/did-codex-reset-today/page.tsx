@@ -74,7 +74,7 @@ export default async function DidCodexResetTodayPage({ params }: Params) {
 
       <Nav />
       <main id="main">
-        <CodexVerdict verdict={verdict} locale={locale as Locale} />
+        <CodexVerdict initialVerdict={verdict} locale={locale as Locale} />
 
         {/* What this page tracks */}
         <section className="px-5 py-16">

@@ -185,12 +185,14 @@
       "unknown": "Not sure yet",
       "yesNote": "It looks like Codex limits reset today. Go burn through those tokens while they're fresh.",
       "noNote": "No sign that Codex limits reset today. Sit tight — and maybe put the wait to good use below.",
-      "unknownNote": "We can't confirm a reset yet today. Check back in a little while.",
-      "monitorLive": "Monitor is live",
-      "monitorSoon": "Live tracking coming soon · checked manually for now",
+      "unknownNote": "We couldn't read the live verdict just now — try refreshing in a moment.",
+      "monitorLive": "Live · mirroring the tracker",
+      "monitorSoon": "Couldn't reach the live source · showing last known",
       "lastChecked": "Last checked {time}",
       "refresh": "Refresh status",
-      "asOf": "As of {date}"
+      "asOf": "As of {date}",
+      "viewPost": "View the post",
+      "credit": "Live verdict mirrored from"
     },
     "explain": {
       "title": "What this page tracks",
@@ -201,12 +203,12 @@
           "body": "A giant yes or no for today, plus the date and time we last checked, so you're never left guessing."
         },
         {
-          "title": "Reckoned in US Pacific",
-          "body": "“Today” rolls over at midnight US Pacific time, matching how Codex limits and OpenAI announcements tend to line up."
+          "title": "Live, mirrored verdict",
+          "body": "We mirror the verdict from a community Codex monitor in real time, so you get the same Yes/No without refreshing X yourself."
         },
         {
-          "title": "Live tracking next",
-          "body": "Soon this updates automatically from the signals that announce a reset. For now it's checked and set by hand."
+          "title": "Rolling window",
+          "body": "Once a reset is confirmed it reads Yes for a rolling window, then flips back to No on its own — the exact logic the source uses."
         }
       ]
     },
@@ -222,8 +224,8 @@
           "a": "It means your Codex usage allowance has rolled back over — your remaining quota refreshes — or OpenAI has publicly increased the limits. Either way, you can get back to work."
         },
         {
-          "q": "What timezone is “today”?",
-          "a": "We use US Pacific time (America/Los_Angeles). The answer flips back to “no” at midnight Pacific and stays there until the next reset is detected."
+          "q": "Where does this data come from?",
+          "a": "We mirror the live verdict from hascodexratelimitreset.today, a community monitor (by @jskoiz) that watches OpenAI's Codex team posts and classifies whether a reset was announced. Credit to them for the signal."
         },
         {
           "q": "Is this an official OpenAI page?",

@@ -1,78 +1,118 @@
 /**
- * Data layer for the "Did Codex reset today?" SEO page.
+ * Data layer for the "Did Codex reset today?" page.
  *
- * Phase 1 has no monitor backend yet, so getVerdict() answers locally (with an
- * env-var manual override). The returned shape already matches what the
- * apps/api Cloudflare Worker will write to KV in Phase 2 — so swapping the
- * source over later is a one-function change (see the note on getVerdict).
+ * We don't run our own monitor — we mirror the community tracker at
+ * hascodexratelimitreset.today, which already polls OpenAI's Codex team posts,
+ * classifies them, and computes a rolling-window verdict. Its `/api/status`
+ * sends no CORS headers, so the browser can't read it cross-origin; the page
+ * fetches it server-side here, and the client polls our same-origin proxy at
+ * /api/codex-status (see app/api/codex-status/route.ts).
  */
 
 import type { Locale } from "@/i18n/routing";
 
-// A Codex limit "reset" is an OpenAI / US-centric event, so we reckon "today"
-// in US Pacific time. Change this one constant to move the daily rollover.
-export const RESET_TIMEZONE = "America/Los_Angeles";
-
 export type VerdictStatus = "yes" | "no" | "unknown";
 
 export type CodexVerdict = {
-  /** The headline answer shown in giant type. */
+  /** Headline answer, mirrored from upstream's rolling-window `state`. */
   status: VerdictStatus;
-  /** ISO timestamp of when the verdict was last checked / produced. */
+  /** ISO timestamp of upstream's last check. */
   lastCheckedISO: string;
-  /** Whether a live monitor is wired up. Phase 1 = false (manual / default). */
+  /** False when we couldn't reach upstream (UI shows a degraded badge). */
   monitorLive: boolean;
-  /** Short classification note — filled by the LLM in Phase 2. */
+  /** Upstream classifier rationale for the most recent tracked post. */
   reason?: string;
-  /** Where the verdict came from, e.g. a tracked X handle (Phase 2). */
-  source?: string;
+  /** Link to the X post behind the current verdict. */
+  sourceUrl?: string;
+};
+
+// Upstream community monitor we mirror. Its `state` already honors the rolling
+// window (autoResetHours), so we surface it verbatim — same logic as the source.
+export const UPSTREAM_STATUS_URL =
+  process.env.CODEX_STATUS_URL ?? "https://hascodexratelimitreset.today/api/status";
+export const UPSTREAM_SITE_URL = "https://hascodexratelimitreset.today";
+export const UPSTREAM_SITE_LABEL = "hascodexratelimitreset.today";
+
+// Display only — the verdict is NOT timezone-based (it mirrors upstream's
+// rolling window). OpenAI posts are US-centric, so clock times read in Pacific.
+const DISPLAY_TZ = "America/Los_Angeles";
+
+type UpstreamEntry = {
+  checkedAt?: number;
+  rationale?: string;
+  tweetUrl?: string;
+  verdict?: string;
+};
+
+type UpstreamStatus = {
+  state?: string;
+  updatedAt?: number;
+  automationSummary?: {
+    latest?: UpstreamEntry;
+    lastReset?: UpstreamEntry;
+  };
 };
 
 const VALID: VerdictStatus[] = ["yes", "no", "unknown"];
 
-/** Manual override so a real reset day can be flipped to "yes" without a code change. */
+/** Manual override (CODEX_RESET_OVERRIDE=yes|no|unknown) for emergencies. */
 function readOverride(): VerdictStatus | null {
   const v = process.env.CODEX_RESET_OVERRIDE?.trim().toLowerCase();
   return VALID.includes(v as VerdictStatus) ? (v as VerdictStatus) : null;
 }
 
-/**
- * Returns the current verdict.
- *
- * Phase 1: answers "no" by default (the honest answer the vast majority of
- * days — limits roll back each day), overridable via CODEX_RESET_OVERRIDE, and
- * reports monitorLive based on CODEX_MONITOR_LIVE so the UI can be upfront that
- * tracking isn't automated yet.
- *
- * Phase 2: replace the body with a fetch to the worker, e.g.
- *   const res = await fetch(`${API_BASE}/codex-reset`, { next: { revalidate: 300 } });
- *   return (await res.json()) as CodexVerdict;
- */
-export async function getVerdict(): Promise<CodexVerdict> {
+/** Map upstream's /api/status payload to our verdict shape. Pure + defensive. */
+export function normalizeUpstream(data: UpstreamStatus): CodexVerdict {
+  const latest = data.automationSummary?.latest;
+  const lastReset = data.automationSummary?.lastReset;
+  const state = (data.state ?? "").toLowerCase();
+  const status: VerdictStatus =
+    state === "yes" ? "yes" : state === "no" ? "no" : "unknown";
+  const checkedAt = latest?.checkedAt ?? data.updatedAt;
+
   return {
-    status: readOverride() ?? "no",
-    lastCheckedISO: new Date().toISOString(),
-    monitorLive: process.env.CODEX_MONITOR_LIVE === "true",
+    status,
+    lastCheckedISO: new Date(checkedAt ?? Date.now()).toISOString(),
+    monitorLive: true,
+    reason: latest?.rationale,
+    // When a reset is live, link the reset post; otherwise the latest tracked post.
+    sourceUrl:
+      (status === "yes" ? lastReset?.tweetUrl : latest?.tweetUrl) ??
+      latest?.tweetUrl,
   };
+}
+
+/** Server-side: fetch upstream and normalize, with a manual override + safe fallback. */
+export async function getVerdict(): Promise<CodexVerdict> {
+  const override = readOverride();
+  try {
+    const res = await fetch(UPSTREAM_STATUS_URL, {
+      headers: {
+        Accept: "application/json",
+        "User-Agent": "lidless.cc/codex-reset (+https://lidless.cc)",
+      },
+      // Thin cache so we don't hammer upstream; the client also polls our proxy.
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) throw new Error(`upstream ${res.status}`);
+    const verdict = normalizeUpstream((await res.json()) as UpstreamStatus);
+    return override ? { ...verdict, status: override } : verdict;
+  } catch {
+    return {
+      status: override ?? "unknown",
+      lastCheckedISO: new Date().toISOString(),
+      monitorLive: false,
+    };
+  }
 }
 
 const intlLocale = (locale: Locale | string) =>
   locale === "zh" ? "zh-CN" : "en-US";
 
-/** YYYY-MM-DD for "now" in the reset timezone (day key + freshness signal). */
-export function todayKey(now: Date = new Date()): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: RESET_TIMEZONE,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(now);
-}
-
-/** Localized "June 5, 2026" / "2026年6月5日" for the headline + title. */
+/** Localized "June 5, 2026" / "2026年6月5日" for the title's date stamp. */
 export function formatToday(locale: Locale | string, now: Date = new Date()): string {
   return new Intl.DateTimeFormat(intlLocale(locale), {
-    timeZone: RESET_TIMEZONE,
+    timeZone: DISPLAY_TZ,
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -82,7 +122,7 @@ export function formatToday(locale: Locale | string, now: Date = new Date()): st
 /** Localized clock time (with zone) for the "last checked" line. */
 export function formatCheckedAt(locale: Locale | string, iso: string): string {
   return new Intl.DateTimeFormat(intlLocale(locale), {
-    timeZone: RESET_TIMEZONE,
+    timeZone: DISPLAY_TZ,
     hour: "2-digit",
     minute: "2-digit",
     timeZoneName: "short",

@@ -1,9 +1,14 @@
-import { getTranslations } from "next-intl/server";
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import type { Locale } from "@/i18n/routing";
 import {
   type CodexVerdict as Verdict,
   formatToday,
   formatCheckedAt,
+  UPSTREAM_SITE_URL,
+  UPSTREAM_SITE_LABEL,
 } from "@/lib/codex-reset";
 
 // Per-status look. "no" is the everyday state, so it stays calm/on-brand
@@ -31,23 +36,40 @@ const STATUS_STYLES: Record<
   },
 };
 
-export async function CodexVerdict({
-  verdict,
+export function CodexVerdict({
+  initialVerdict,
   locale,
 }: {
-  verdict: Verdict;
+  initialVerdict: Verdict;
   locale: Locale;
 }) {
-  const t = await getTranslations("CodexReset");
+  const t = useTranslations("CodexReset");
+  // SSR gives us an initial (possibly CDN-cached) verdict for SEO + instant
+  // paint; we then poll the same-origin proxy for the live value.
+  const [verdict, setVerdict] = useState(initialVerdict);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const load = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      const res = await fetch("/api/codex-status", { cache: "no-store" });
+      if (res.ok) setVerdict((await res.json()) as Verdict);
+    } catch {
+      /* keep the last-known verdict on a transient failure */
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
+
+  // Refresh to live once on mount.
+  useEffect(() => {
+    void load();
+  }, [load]);
+
   const s = STATUS_STYLES[verdict.status];
   const today = formatToday(locale, new Date());
   const checkedAt = formatCheckedAt(locale, verdict.lastCheckedISO);
-
-  // localePrefix is "as-needed": the default locale (en) has no prefix.
-  const selfHref =
-    locale === "en"
-      ? "/did-codex-reset-today"
-      : `/${locale}/did-codex-reset-today`;
+  const reason = verdict.reason?.trim();
 
   return (
     <section className="relative overflow-hidden px-5 pt-32 pb-16 text-center sm:pt-36">
@@ -58,7 +80,7 @@ export async function CodexVerdict({
       />
 
       <div className="relative mx-auto max-w-3xl">
-        {/* Live / manual badge */}
+        {/* Live / degraded badge */}
         <span className="inline-flex items-center gap-2 rounded-full border border-hairline bg-surface px-3 py-1 text-xs font-medium text-muted">
           <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
           {verdict.monitorLive ? t("verdict.monitorLive") : t("verdict.monitorSoon")}
@@ -81,6 +103,28 @@ export async function CodexVerdict({
           {t(`verdict.${verdict.status}Note`)}
         </p>
 
+        {/* Evidence: the upstream classifier's rationale + the source post */}
+        {reason && (
+          <p className="mx-auto mt-5 max-w-xl text-pretty text-sm leading-relaxed text-muted/80">
+            <span className="text-muted/60">“</span>
+            {reason.length > 200 ? `${reason.slice(0, 200)}…` : reason}
+            <span className="text-muted/60">”</span>
+            {verdict.sourceUrl && (
+              <>
+                {" "}
+                <a
+                  href={verdict.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="whitespace-nowrap text-accent transition hover:text-accent-bright"
+                >
+                  {t("verdict.viewPost")} →
+                </a>
+              </>
+            )}
+          </p>
+        )}
+
         {/* Status line */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm text-muted">
           <span>{t("verdict.asOf", { date: today })}</span>
@@ -90,13 +134,15 @@ export async function CodexVerdict({
           <span>{t("verdict.lastChecked", { time: checkedAt })}</span>
         </div>
 
-        <a
-          href={selfHref}
-          className="mt-8 inline-flex items-center gap-2 rounded-full border border-hairline px-5 py-2.5 text-sm font-medium text-ink transition hover:border-accent/50"
+        <button
+          type="button"
+          onClick={() => void load()}
+          disabled={refreshing}
+          className="mt-8 inline-flex items-center gap-2 rounded-full border border-hairline px-5 py-2.5 text-sm font-medium text-ink transition hover:border-accent/50 disabled:opacity-60"
         >
           <svg
             viewBox="0 0 24 24"
-            className="h-4 w-4"
+            className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`}
             fill="none"
             stroke="currentColor"
             strokeWidth={1.8}
@@ -106,7 +152,20 @@ export async function CodexVerdict({
             <path d="M21 12a9 9 0 1 1-2.64-6.36M21 4v4h-4" />
           </svg>
           {t("verdict.refresh")}
-        </a>
+        </button>
+
+        {/* Data-source credit — we mirror the community monitor */}
+        <p className="mt-6 text-xs text-muted/70">
+          {t("verdict.credit")}{" "}
+          <a
+            href={UPSTREAM_SITE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-muted underline decoration-dotted underline-offset-2 transition hover:text-ink"
+          >
+            {UPSTREAM_SITE_LABEL}
+          </a>
+        </p>
       </div>
     </section>
   );
