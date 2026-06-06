@@ -26,7 +26,7 @@ App side, in `apps/desktop/src-tauri/tauri.conf.json`:
 ```jsonc
 "plugins": {
   "updater": {
-    "endpoints": ["https://api.lidless.cc/update/{{target}}/{{arch}}/{{current_version}}"],
+    "endpoints": ["https://api.lidless.app/update/{{target}}/{{arch}}/{{current_version}}"],
     "pubkey": "<minisign public key>"
   }
 }
@@ -72,4 +72,4 @@ GitHub secrets used by CI (in the release workflows):
 | `CLOUDFLARE_API_TOKEN` | Deploy the Worker + write KV (perms: Workers Scripts:Edit, Workers KV Storage:Edit) |
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account id |
 
-> Public domain is `api.lidless.cc` (see `routes` in `wrangler.jsonc`; created on deploy; requires lidless.cc on Cloudflare DNS).
+> Public domain is `api.lidless.app` (see `routes` in `wrangler.jsonc`; created on deploy; requires lidless.app on Cloudflare DNS).

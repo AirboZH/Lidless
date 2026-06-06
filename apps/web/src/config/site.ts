@@ -6,7 +6,7 @@
 
 // Canonical site origin (used for canonical / hreflang / sitemap / OG). Set NEXT_PUBLIC_SITE_URL when deploying.
 export const siteUrl = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://lidless.cc"
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://lidless.app"
 ).replace(/\/$/, "");
 
 // The real download link the primary CTA "Download for macOS" points to (.dmg / Release page).
@@ -44,7 +44,7 @@ export const siteConfig = {
   minMacOS: "12.0",
   // Social / contact (used by OG and JSON-LD)
   twitter: process.env.NEXT_PUBLIC_TWITTER ?? "",
-  email: "hi@lidless.cc",
+  email: "hi@lidless.app",
 } as const;
 
 export type SiteConfig = typeof siteConfig;

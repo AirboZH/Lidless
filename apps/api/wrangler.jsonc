@@ -19,7 +19,7 @@
     }
   ],
 
-  // Public domain: https://api.lidless.cc (the app's updater endpoint points here).
-  // Requires lidless.cc to be a zone on Cloudflare; deploy creates this custom-domain route.
-  "routes": [{ "pattern": "api.lidless.cc", "custom_domain": true }]
+  // Public domain: https://api.lidless.app (the app's updater endpoint points here).
+  // Requires lidless.app to be a zone on Cloudflare; deploy creates this custom-domain route.
+  "routes": [{ "pattern": "api.lidless.app", "custom_domain": true }]
 }

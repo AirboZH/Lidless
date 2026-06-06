@@ -43,7 +43,7 @@
   "plugins": {
     "updater": {
       "endpoints": [
-        "https://api.lidless.cc/update/{{target}}/{{arch}}/{{current_version}}"
+        "https://api.lidless.app/update/{{target}}/{{arch}}/{{current_version}}"
       ],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDVGQzY2NkIzNEI2NDdBOTQKUldTVWVtUkxzMmJHWHdUdElOWTZ5d1JERDZGeWFNT2o4QVRib3VCTUczbllZNWJXV01TYVp6eUMK"
     }

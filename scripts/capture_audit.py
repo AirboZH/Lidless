@@ -1,5 +1,5 @@
 """
-Simplified screenshot capture for lidless.cc visual SEO audit.
+Simplified screenshot capture for lidless.app visual SEO audit.
 Captures key viewports and runs JS checks.
 """
 from playwright.sync_api import sync_playwright
@@ -19,7 +19,7 @@ def run_audit():
         print("Capturing desktop 1440…")
         ctx = browser.new_context(viewport={"width": 1440, "height": 900}, color_scheme="light")
         page = ctx.new_page()
-        page.goto("https://lidless.cc", wait_until="networkidle", timeout=30000)
+        page.goto("https://lidless.app", wait_until="networkidle", timeout=30000)
         time.sleep(2)
         page.screenshot(path=os.path.join(OUTPUT_DIR, "01_desktop_1440_atf.png"), full_page=False)
 
@@ -104,7 +104,7 @@ def run_audit():
         print("Capturing mobile 390…")
         ctx = browser.new_context(viewport={"width": 390, "height": 844}, color_scheme="light")
         page = ctx.new_page()
-        page.goto("https://lidless.cc", wait_until="networkidle", timeout=30000)
+        page.goto("https://lidless.app", wait_until="networkidle", timeout=30000)
         time.sleep(2)
         page.screenshot(path=os.path.join(OUTPUT_DIR, "03_mobile_390_atf.png"), full_page=False)
 
@@ -158,7 +158,7 @@ def run_audit():
         print("Capturing tablet 768…")
         ctx = browser.new_context(viewport={"width": 768, "height": 1024}, color_scheme="light")
         page = ctx.new_page()
-        page.goto("https://lidless.cc", wait_until="networkidle", timeout=30000)
+        page.goto("https://lidless.app", wait_until="networkidle", timeout=30000)
         time.sleep(2)
         page.screenshot(path=os.path.join(OUTPUT_DIR, "05_tablet_768_atf.png"), full_page=False)
         ctx.close()
@@ -167,7 +167,7 @@ def run_audit():
         print("Capturing dark mode…")
         ctx = browser.new_context(viewport={"width": 1440, "height": 900}, color_scheme="dark")
         page = ctx.new_page()
-        page.goto("https://lidless.cc", wait_until="networkidle", timeout=30000)
+        page.goto("https://lidless.app", wait_until="networkidle", timeout=30000)
         time.sleep(2)
         page.screenshot(path=os.path.join(OUTPUT_DIR, "06_desktop_dark.png"), full_page=False)
         results["dark_hero_contrast"] = page.evaluate("""
@@ -187,7 +187,7 @@ def run_audit():
         ctx = browser.new_context(viewport={"width": 1200, "height": 630})
         page = ctx.new_page()
         try:
-            page.goto("https://lidless.cc/en/opengraph-image", wait_until="networkidle", timeout=15000)
+            page.goto("https://lidless.app/en/opengraph-image", wait_until="networkidle", timeout=15000)
             time.sleep(1)
             page.screenshot(path=os.path.join(OUTPUT_DIR, "07_og_image_en.png"), full_page=False)
             results["og_en_dims"] = page.evaluate("""
@@ -204,7 +204,7 @@ def run_audit():
         ctx = browser.new_context(viewport={"width": 1200, "height": 630})
         page = ctx.new_page()
         try:
-            page.goto("https://lidless.cc/zh/opengraph-image", wait_until="networkidle", timeout=15000)
+            page.goto("https://lidless.app/zh/opengraph-image", wait_until="networkidle", timeout=15000)
             time.sleep(1)
             page.screenshot(path=os.path.join(OUTPUT_DIR, "08_og_image_zh.png"), full_page=False)
             results["og_zh_dims"] = page.evaluate("""
@@ -222,7 +222,7 @@ def run_audit():
         print("Capturing zh locale…")
         ctx = browser.new_context(viewport={"width": 1440, "height": 900}, color_scheme="light")
         page = ctx.new_page()
-        page.goto("https://lidless.cc/zh", wait_until="networkidle", timeout=30000)
+        page.goto("https://lidless.app/zh", wait_until="networkidle", timeout=30000)
         time.sleep(2)
         page.screenshot(path=os.path.join(OUTPUT_DIR, "09_zh_desktop_atf.png"), full_page=False)
         results["zh_checks"] = page.evaluate("""
@@ -245,7 +245,7 @@ def run_audit():
 
         ctx = browser.new_context(viewport={"width": 390, "height": 844}, color_scheme="light")
         page = ctx.new_page()
-        page.goto("https://lidless.cc/zh", wait_until="networkidle", timeout=30000)
+        page.goto("https://lidless.app/zh", wait_until="networkidle", timeout=30000)
         time.sleep(2)
         page.screenshot(path=os.path.join(OUTPUT_DIR, "11_zh_mobile_atf.png"), full_page=False)
         page.screenshot(path=os.path.join(OUTPUT_DIR, "12_zh_mobile_full.png"), full_page=True)
@@ -255,14 +255,14 @@ def run_audit():
         print("Capturing docs…")
         ctx = browser.new_context(viewport={"width": 1440, "height": 900}, color_scheme="light")
         page = ctx.new_page()
-        page.goto("https://lidless.cc/docs", wait_until="networkidle", timeout=30000)
+        page.goto("https://lidless.app/docs", wait_until="networkidle", timeout=30000)
         time.sleep(2)
         page.screenshot(path=os.path.join(OUTPUT_DIR, "13_docs_desktop.png"), full_page=False)
         ctx.close()
 
         ctx = browser.new_context(viewport={"width": 390, "height": 844}, color_scheme="light")
         page = ctx.new_page()
-        page.goto("https://lidless.cc/docs", wait_until="networkidle", timeout=30000)
+        page.goto("https://lidless.app/docs", wait_until="networkidle", timeout=30000)
         time.sleep(2)
         page.screenshot(path=os.path.join(OUTPUT_DIR, "14_docs_mobile.png"), full_page=False)
         ctx.close()

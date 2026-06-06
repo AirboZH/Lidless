@@ -6,11 +6,11 @@ Lidless holds a single OS power assertion (IOKit `PreventUserIdleSystemSleep` on
 
 ## Key pages
 
-- [Home](https://lidless.cc/): product overview, features, FAQ, and downloads for macOS and Windows
-- [Documentation](https://lidless.cc/docs): guides and reference for Lidless
-- [Getting started](https://lidless.cc/docs/getting-started): install Lidless and keep your machine awake in under a minute
-- [Keep Claude Code running overnight](https://lidless.cc/docs/guides/keep-claude-code-awake): start a long agentic run, lock your machine, and let it finish
-- [Settings reference](https://lidless.cc/docs/reference/settings): every Lidless switch and what it does
+- [Home](https://lidless.app/): product overview, features, FAQ, and downloads for macOS and Windows
+- [Documentation](https://lidless.app/docs): guides and reference for Lidless
+- [Getting started](https://lidless.app/docs/getting-started): install Lidless and keep your machine awake in under a minute
+- [Keep Claude Code running overnight](https://lidless.app/docs/guides/keep-claude-code-awake): start a long agentic run, lock your machine, and let it finish
+- [Settings reference](https://lidless.app/docs/reference/settings): every Lidless switch and what it does
 
 ## Source
 

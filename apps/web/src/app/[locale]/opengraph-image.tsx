@@ -87,7 +87,7 @@ export default async function OpengraphImage({
           }}
         >
           <span>macOS menu bar app</span>
-          <span>lidless.cc</span>
+          <span>lidless.app</span>
         </div>
       </div>
     ),

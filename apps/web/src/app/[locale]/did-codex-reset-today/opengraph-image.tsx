@@ -18,14 +18,14 @@ const copy = {
     yes: "YES",
     no: "NO",
     unknown: "NOT YET",
-    tag: "Live status · lidless.cc",
+    tag: "Live status · lidless.app",
   },
   zh: {
     question: "Codex 今天重置了吗？",
     yes: "重置了",
     no: "还没",
     unknown: "暂未确认",
-    tag: "实时状态 · lidless.cc",
+    tag: "实时状态 · lidless.app",
   },
 } as const;
 

@@ -1,5 +1,5 @@
 """
-Screenshot capture script for lidless.cc visual SEO audit.
+Screenshot capture script for lidless.app visual SEO audit.
 Captures multiple viewports, OG image, dark mode, and zh locale.
 """
 from playwright.sync_api import sync_playwright
@@ -10,20 +10,20 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 CAPTURES = [
     # (url, filename, width, height, color_scheme, wait_extra)
-    ("https://lidless.cc", "desktop_1440.png", 1440, 900, "light", 0),
-    ("https://lidless.cc", "mobile_390.png", 390, 844, "light", 0),
-    ("https://lidless.cc", "tablet_768.png", 768, 1024, "light", 0),
-    ("https://lidless.cc", "desktop_dark.png", 1440, 900, "dark", 0),
-    ("https://lidless.cc/zh", "zh_desktop_1440.png", 1440, 900, "light", 0),
-    ("https://lidless.cc/zh", "zh_mobile_390.png", 390, 844, "light", 0),
-    ("https://lidless.cc/docs", "docs_desktop.png", 1440, 900, "light", 0),
-    ("https://lidless.cc/docs", "docs_mobile.png", 390, 844, "light", 0),
+    ("https://lidless.app", "desktop_1440.png", 1440, 900, "light", 0),
+    ("https://lidless.app", "mobile_390.png", 390, 844, "light", 0),
+    ("https://lidless.app", "tablet_768.png", 768, 1024, "light", 0),
+    ("https://lidless.app", "desktop_dark.png", 1440, 900, "dark", 0),
+    ("https://lidless.app/zh", "zh_desktop_1440.png", 1440, 900, "light", 0),
+    ("https://lidless.app/zh", "zh_mobile_390.png", 390, 844, "light", 0),
+    ("https://lidless.app/docs", "docs_desktop.png", 1440, 900, "light", 0),
+    ("https://lidless.app/docs", "docs_mobile.png", 390, 844, "light", 0),
 ]
 
 OG_URLS = [
-    ("https://lidless.cc/opengraph-image", "og_image_root.png"),
-    ("https://lidless.cc/en/opengraph-image", "og_image_en.png"),
-    ("https://lidless.cc/zh/opengraph-image", "og_image_zh.png"),
+    ("https://lidless.app/opengraph-image", "og_image_root.png"),
+    ("https://lidless.app/en/opengraph-image", "og_image_en.png"),
+    ("https://lidless.app/zh/opengraph-image", "og_image_zh.png"),
 ]
 
 
@@ -292,7 +292,7 @@ def run_audit():
         print("\n=== Accessibility & contrast checks (desktop) ===")
         ctx = browser.new_context(viewport={"width": 1440, "height": 900}, color_scheme="light")
         page = ctx.new_page()
-        page.goto("https://lidless.cc", wait_until="networkidle", timeout=30000)
+        page.goto("https://lidless.app", wait_until="networkidle", timeout=30000)
         time.sleep(2)
         results["a11y_desktop"] = check_accessibility(page)
         results["contrast_hero_light"] = check_contrast_hero(page)
@@ -302,7 +302,7 @@ def run_audit():
         print("\n=== Accessibility checks (mobile) ===")
         ctx = browser.new_context(viewport={"width": 390, "height": 844}, color_scheme="light")
         page = ctx.new_page()
-        page.goto("https://lidless.cc", wait_until="networkidle", timeout=30000)
+        page.goto("https://lidless.app", wait_until="networkidle", timeout=30000)
         time.sleep(2)
         results["a11y_mobile"] = check_accessibility(page)
         results["tap_targets"] = check_mobile_tap_targets(page)
@@ -312,7 +312,7 @@ def run_audit():
         print("\n=== Dark mode contrast checks ===")
         ctx = browser.new_context(viewport={"width": 1440, "height": 900}, color_scheme="dark")
         page = ctx.new_page()
-        page.goto("https://lidless.cc", wait_until="networkidle", timeout=30000)
+        page.goto("https://lidless.app", wait_until="networkidle", timeout=30000)
         time.sleep(2)
         results["contrast_hero_dark"] = check_contrast_hero(page)
         ctx.close()
@@ -320,7 +320,7 @@ def run_audit():
         print("\n=== Chinese locale checks ===")
         ctx = browser.new_context(viewport={"width": 1440, "height": 900}, color_scheme="light")
         page = ctx.new_page()
-        page.goto("https://lidless.cc/zh", wait_until="networkidle", timeout=30000)
+        page.goto("https://lidless.app/zh", wait_until="networkidle", timeout=30000)
         time.sleep(2)
         results["a11y_zh"] = check_accessibility(page)
         results["horiz_scroll_zh"] = check_horizontal_scroll(page)

@@ -89,7 +89,7 @@ export async function getVerdict(): Promise<CodexVerdict> {
     const res = await fetch(UPSTREAM_STATUS_URL, {
       headers: {
         Accept: "application/json",
-        "User-Agent": "lidless.cc/codex-reset (+https://lidless.cc)",
+        "User-Agent": "lidless.app/codex-reset (+https://lidless.app)",
       },
       // Thin cache so we don't hammer upstream; the client also polls our proxy.
       next: { revalidate: 60 },
