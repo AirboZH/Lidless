@@ -31,6 +31,15 @@ export const githubUrl =
 export const feedbackUrl =
   process.env.NEXT_PUBLIC_FEEDBACK_URL ?? "https://lidless.fider.io/";
 
+// VibeLoft Web Telemetry (official browser runtime). Both values are public
+// build-time config for the hosted deployment — set them in the deployment
+// environment (e.g. Vercel, Production scope only). When either is missing the
+// telemetry script is not rendered at all, so open-source forks, local dev and
+// preview builds stay telemetry-free.
+export const vibeloftProductId =
+  process.env.NEXT_PUBLIC_VIBELOFT_PRODUCT_ID ?? "";
+export const vibeloftAuthKey = process.env.NEXT_PUBLIC_VIBELOFT_AUTH_KEY ?? "";
+
 export const siteConfig = {
   name: "Lidless",
   url: siteUrl,

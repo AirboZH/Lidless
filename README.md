@@ -85,6 +85,7 @@ Copy `apps/web/.env.example` to `.env.local` and fill in what you need. Key entr
 | `NEXT_PUBLIC_DOWNLOAD_URL` | **The real download link for the "Download for macOS" CTA** (to be filled in) |
 | `NEXT_PUBLIC_GITHUB_URL` | GitHub repository URL |
 | `NEXT_PUBLIC_SANITY_*` | Sanity CMS (optional, see below) |
+| `NEXT_PUBLIC_VIBELOFT_PRODUCT_ID` / `NEXT_PUBLIC_VIBELOFT_AUTH_KEY` | VibeLoft Web Telemetry for the hosted production site (optional). When either is unset — the default for forks, local dev and previews — no telemetry script is rendered |
 
 > ⚠️ The download link currently falls back to GitHub Releases. Set
 > `NEXT_PUBLIC_DOWNLOAD_URL` to your real `.dmg` / Release URL.

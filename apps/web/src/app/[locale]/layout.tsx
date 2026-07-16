@@ -6,7 +6,12 @@ import { Analytics } from "@vercel/analytics/next";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { routing, type Locale } from "@/i18n/routing";
-import { siteConfig, siteUrl } from "@/config/site";
+import {
+  siteConfig,
+  siteUrl,
+  vibeloftAuthKey,
+  vibeloftProductId,
+} from "@/config/site";
 import { buildAlternates } from "@/lib/seo";
 import "../globals.css";
 
@@ -111,6 +116,18 @@ export default async function LocaleLayout({
             gtag('config', '${GA_MEASUREMENT_ID}');
           `}
         </Script>
+        {/* VibeLoft Web Telemetry — official runtime only. Rendered once per
+            document (this is the single global layout), so SPA navigations are
+            covered by the runtime itself. Only emitted when both env vars are
+            configured (i.e. the hosted production deployment). */}
+        {vibeloftProductId && vibeloftAuthKey ? (
+          <script
+            defer
+            src="https://vibeloft.ai/telemetry/v1.js"
+            data-vl-product-id={vibeloftProductId}
+            data-vl-auth-key={vibeloftAuthKey}
+          />
+        ) : null}
       </body>
     </html>
   );
